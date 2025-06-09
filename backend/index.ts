@@ -1,5 +1,4 @@
-require('module-alias/register');
-require('dotenv').config();
-require('./src/lib/logger');
-
-require('./src/lib/express');
+import 'module-alias/register';
+import 'dotenv/config';
+import './src/lib/logger';
+import './src/lib/express';

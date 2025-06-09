@@ -1,7 +1,7 @@
-const express = require('express');
-const loadRoutes = require('./versions');
-const cors = require('cors');
-const bodyParser = require('body-parser');
+import express from 'express';
+import loadRoutes from './versions';
+import cors from 'cors';
+import bodyParser from 'body-parser';
 
 const app = express();
 
@@ -13,7 +13,6 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
-
 // allow all cors
 app.use(cors());
 app.use(bodyParser.json());
@@ -24,7 +23,7 @@ app.use(bodyParser.json());
 loadRoutes(app, 'v1', '/api/v1');
 loadRoutes(app, 'v1', '/api');
 
-app.use((req, res) => {
+app.use((req: express.Request, res: express.Response) => {
     // log url
     console.log(`[ERROR] ${req.url}`);
     

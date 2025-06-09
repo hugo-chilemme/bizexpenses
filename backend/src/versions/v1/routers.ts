@@ -1,5 +1,6 @@
 import { Application, Request, Response, NextFunction } from 'express';
 import scanRoutes from '../../lib/routes';
+import { authenticateJWT } from "../../lib/auth"
 
 type EndpointHandler = (req: Request, res: Response) => any;
 type RouteConfig = Record<string, any>;
@@ -50,8 +51,11 @@ function registerRoute(
     endpoint: EndpointHandler,
     config: any
 ): void {
-    (app as any)[method as keyof Application](route, async (req: Request, res: Response) => {
-
+    const middlewares = [];
+    if (config && config.isAuthentified) {
+        middlewares.push(authenticateJWT);
+    }
+    (app as any)[method as keyof Application](route, ...middlewares, async (req: Request, res: Response) => {
         return endpoint(req, res);
     });
     console.log(`${method.toUpperCase()} — ${route} [http://localhost:10001${route}]`);

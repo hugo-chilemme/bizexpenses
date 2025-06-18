@@ -23,6 +23,7 @@ const config = {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
       colors: {
+        // Variables CSS
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -55,6 +56,18 @@ const config = {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+
+        // 🎨 Palette personnalisée Modern Business Blue
+        biz: {
+          background: "#0F172A", // dark blue
+          primary: "#2563EB",    // blue
+          secondary: "#3B82F6",  // lighter blue
+          surface: "#F1F5F9",    // light gray
+          border: "#475569",     // dark gray
+          success: "#4ADE80",    // soft green
+          error: "#F87171",      // soft red
+          white: "#FFFFFF",      // white
         },
       },
       borderRadius: {

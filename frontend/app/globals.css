@@ -86,3 +86,10 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+.trail-effect {
+  filter: blur(12px);
+  transition-timing-function: cubic-bezier (1.1, 0.75, 0.25, 0.1);
+
+}

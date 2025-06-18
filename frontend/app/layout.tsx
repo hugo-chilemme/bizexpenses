@@ -2,7 +2,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
-import { Inter as FontSans } from "next/font/google";
+import { Lexend_Deca as FontSans } from "next/font/google";
 import "./globals.css";
 
 const fontSans = FontSans({
@@ -23,7 +23,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased",
+          "min-h-screen bg-gray-100 font-sans antialiased",
           fontSans.variable
         )}
       >
@@ -33,7 +33,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
-          <Toaster />
+          <Toaster richColors position="bottom-center" />
         </ThemeProvider>
       </body>
     </html>

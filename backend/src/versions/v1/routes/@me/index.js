@@ -1,16 +1,16 @@
 
 const config = {
-	post: {
+	get: {
 		isAuthentified: true,
 	}
 }
 
-const post = async (req, res) => {
+const get = async (req, res) => {
 
 	return res.send({status: 'success', data: req.user});
 };
 
 module.exports = {
-	post,
+	get,
 	config
 };

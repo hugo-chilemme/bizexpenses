@@ -3,3 +3,5 @@ yarn-error.log
 package-lock.json
 .env
 uploads/*
+pnpm-debug.log
+pnpm-lock.yaml

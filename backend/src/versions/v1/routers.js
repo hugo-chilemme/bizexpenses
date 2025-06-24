@@ -47,23 +47,30 @@ module.exports = (app, api) => {
 
 function registerRoute(app, method, route, endpoint, config)
 {
+    const middlewares = [];
+    if (config.isAuthentified) {
+        middlewares.push(jwtAuth);
+        if (Array.isArray(config.roles)) {
+            middlewares.push(requireRole(config.roles));
+        }
+    }
 
-    if (config.isAuthentified)
-    {
-        app[method](route, jwtAuth, async (req, res, next) => {
-            console.info(`Route ${route} is authenticated, using JWT authentication.`);
-            return endpoint(req, res);
-        });
-    }
-    else 
-    {
-        app[method](route, async (req, res, next) => {
+    app[method](route, ...middlewares, async (req, res) => {
+        if (!config.isAuthentified)
             console.warn(`Route ${route} is not authenticated, this is not recommended.`);
-            return endpoint(req, res);
-        });
-    }
+        return endpoint(req, res);
+    });
 
     console.log(`${method.toUpperCase()} — ${route}`);
+}
+
+function requireRole(roles) {
+    return function (req, res, next) {
+        if (!req.user || !roles.includes(req.user.role)) {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
+        next();
+    };
 }
 
 

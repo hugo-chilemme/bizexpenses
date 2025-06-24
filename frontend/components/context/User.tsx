@@ -6,7 +6,12 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 interface UserContextType {
-	// Définir ici les types nécessaires
+        uuid?: string;
+        firstName?: string;
+        lastName?: string;
+        email?: string;
+        role?: string;
+        [key: string]: any;
 }
 
 const UserContext = createContext<UserContextType | null>(null);
@@ -20,13 +25,14 @@ export const UserProvider = ({ children }: UserProviderProps) => {
 	const [loading, setLoading] = useState(true);
 	const [user, setUser] = useState<UserContextType | null>(null);
 
-	function logout() {
-		localStorage.removeItem("authorization");
-		localStorage.removeItem("uuid");
-		setUser(null);
-		toast.success("Vous avez été déconnecté avec succès.");
-		router.push("/"); // Rediriger vers la page de connexion
-	}
+        function logout() {
+                localStorage.removeItem("authorization");
+                localStorage.removeItem("uuid");
+                localStorage.removeItem("role");
+                setUser(null);
+                toast.success("Vous avez été déconnecté avec succès.");
+                router.push("/"); // Rediriger vers la page de connexion
+        }
 	
 
 	useEffect(() => {
@@ -35,7 +41,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
 				return setLoading(false);
 			}
 
-			const response = await ApiController("@me", "POST");
+                        const response = await ApiController("users/me", "GET");
 			if (response.status === "success") {
 				console.log("User data fetched successfully:", response.data);
 				setUser(response.data);

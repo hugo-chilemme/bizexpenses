@@ -62,8 +62,11 @@ export default function Page() {
 
 		toast.success("Connexion réussie !");
 
-		localStorage.setItem("authorization", response.data.authorization);
-		localStorage.setItem("uuid", response.data.user.uuid);
+                localStorage.setItem("authorization", response.data.authorization);
+                localStorage.setItem("uuid", response.data.user.uuid);
+                if (response.data.user.role) {
+                        localStorage.setItem("role", response.data.user.role);
+                }
 
 		setTimeout(() => {
 			setLoading(false);

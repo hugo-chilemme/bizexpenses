@@ -50,8 +50,8 @@ function registerRoute(app, method, route, endpoint, config)
     const middlewares = [];
     if (config.isAuthentified) {
         middlewares.push(jwtAuth);
-        if (Array.isArray(config.roles)) {
-            middlewares.push(requireRole(config.roles));
+        if (Array.isArray(config._entreprise_roles)) {
+            middlewares.push(requireRole(config._entreprise_roles));
         }
     }
 
@@ -66,8 +66,8 @@ function registerRoute(app, method, route, endpoint, config)
 
 function requireRole(roles) {
     return function (req, res, next) {
-        if (!req.user || !roles.includes(req.user.role)) {
-            return res.status(403).json({ error: 'Forbidden' });
+        if (!req.user || !roles.includes(req.user.entreprise?.role)) {
+            return res.status(403).json({ status: "error", error: "You don't have access to this resource" });
         }
         next();
     };
@@ -92,7 +92,7 @@ async function jwtAuth(req, res, next) {
     const token = req.headers['authorization']?.split(' ')[1];
 
     if (!token) {
-        return res.status(401).json({ error: 'Unauthorized' });
+        return res.status(401).json({status: "error", message: "You don't have access to this resource" });
     }
 
     try {
@@ -101,9 +101,22 @@ async function jwtAuth(req, res, next) {
 
         const user = await database().collection('users').findOne({ uuid: uuid });
         if (!user) {
-            return res.status(401).json({ error: 'User not found' });
+            return res.status(401).json({ status: "error", message: "User not found" });
         }
+
+        const entreprise = await database().collection('entreprises').findOne({ 'users.id': user.uuid });
+
         req.user = {...user, password: undefined}; 
+
+        if (entreprise) {
+            req.user.entreprise = {
+                uuid: entreprise.uuid,
+                role: entreprise.users.find(u => u.id === user.uuid)?.role || 'user',
+                name: entreprise.name,
+                rules: entreprise.rules || {},
+            };
+        }
+
 
         next();
     } catch (err) {

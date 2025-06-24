@@ -1,125 +1,117 @@
-# 💼 BizExpenses – Simplifying Business Expense Management
+# BizExpenses
 
-## 👤 Team Member
-Solo project – independently developed
-
----
-
-## 💡 Project Description
-
-**BizExpenses** is a full-stack web application that helps professionals and businesses manage work-related expenses (travel, meals, accommodation, equipment purchases, etc.).
-
-### Key Features
-- Submission and management of expense reports
-- Upload of supporting documents (PDF/images)
-- Role-based dashboards (employee vs admin)
-- Approval status tracking (draft, pending, approved, rejected)
-- Export reports to CSV or PDF
-- Secure login and access control
-- Self-hosted file storage protected by Cloudflare
+BizExpenses est une application conçue pour simplifier la gestion des notes de frais en entreprise 🧾  
+Chaque salarié peut soumettre ses justificatifs, un manager les valide ou les refuse, et les RH pilotent l'ensemble du système.
 
 ---
 
-## 🎓 Learning Objectives
+## Fonctionnalités principales 💡
 
-- Master full-stack development with custom authentication
-- Handle secure file uploads and private access
-- Manage user roles and access rights
-- Deploy and secure a Node.js app on a dedicated server
-- Deliver a solo project at production quality
-
----
-
-## 🛠️ Tech Stack & Rationale
-
-### ⚙️ Frontend – **Next.js**
-- React framework with SSR, API routes, static export
-- Built-in routing and performance optimization
-
-### 🎨 Styling – **Tailwind CSS**
-- Utility-first framework for fast, responsive UI
-- Consistent styling directly in JSX
-
-### 🧠 Language – **TypeScript**
-- Static typing, better IDE support
-- Fewer runtime bugs, easier maintenance
-
-### 🔙 Backend – **Node.js + Express**
-- Fast, minimalist backend server
-- Ideal for REST APIs and custom middleware
-
-### 🗃️ Database – **MongoDB + Mongoose**
-- Flexible NoSQL for evolving logic
-- Mongoose for structure and validation
-
-### 🔐 Auth – **Custom Authentication System**
-- JWT login with secure sessions and cookies
-- Full control over logic and roles (admin, user)
-- Zero third-party dependencies
-
-### 🧾 File Storage – **VPS + Cloudflare**
-- Supporting documents stored on private server
-- Cloudflare protection (DDoS, WAF, access rules)
-- Full control over access, naming, expiration
-
-### 🗂️ Project Management – **Trello**
-- Kanban for scope, tasks, deadlines
-- Weekly tracking over 4 weeks
-
-### 🛠️ DevOps – **GitHub + CI/CD**
-- Versioning and collaboration
-- Vercel (frontend) + custom VPS (backend + files)
-- GitHub Actions for deployment and testing
+- Authentification sécurisée par JWT
+- Gestion des rôles : salarié, manager, admin
+- Création de frais avec justificatif en ligne
+- Validation ou refus des dépenses par les managers
+- Configuration des règles (plafond, catégorie interdite, délai) par les RH
+- Export CSV des dépenses validées
+- Scanning automatique des tickets (OCR)
+- Design responsive adapté au mobile
 
 ---
 
-## ⚠️ Identified Challenges
+## Technologies utilisées 🛠️
 
-- Secure custom authentication (hashing, sessions)
-- Validation and secure storage of uploaded files
-- Admin system for validation/approval
-- Clean UX with role separation
-- Solo time management
-
----
-
-## 📆 Timeline (27 days)
-
-### Week 1 – Planning
-- Define features, flows, DB schema
-- Project setup and basic layout
-- Custom auth and role management
-
-### Week 2 – Core Development
-- User dashboard, expense form
-- API routes and MongoDB connection
-- Frontend forms and session management
-
-### Week 3 – Advanced Features
-- File uploads to VPS (Node/Express)
-- Cloudflare rules/protection
-- Admin views and report filters
-
-### Week 4 – Finalization & Deployment
-- CSV/PDF export
-- UI/UX improvements
-- Deployment (Vercel + server) and testing
-- Pitch & documentation prep
+- **Frontend** : Next.js, Tailwind CSS, TypeScript
+- **Backend** : Node.js, Express, TypeScript
+- **Base de données** : MongoDB
+- **Fichiers** : Multer (stockage local)
+- **Sécurité** : JWT, Bcrypt
+- **CI/CD** : GitHub Actions
+- **Déploiement** : VPS personnel (Nginx + PM2)
 
 ---
 
-## 🖼️ Mockups
-Design in Figma (to be shown during pitch)
+## Arborescence du projet 📁
+
+```
+bizexpenses/
+├── backend/
+│   ├── routes/
+│   ├── controllers/
+│   ├── models/
+│   ├── middleware/
+│   └── uploads/
+├── frontend/
+│   ├── pages/
+│   ├── components/
+│   └── styles/
+└── README.md
+```
 
 ---
 
-## 🔗 Useful Links
-- Google Slides (Pitch)
-- Trello (Timeline)
-- GitHub (Codebase)
-- Live demo (Vercel + VPS API)
+## Installation locale ⚙️
+
+1. Clonez le dépôt
+2. Installez les dépendances
+3. Lancez le backend puis le frontend
+
+```bash
+git clone https://github.com/ton-user/bizexpenses.git
+cd backend
+npm install
+cp .env.example .env
+npm run dev
+
+cd ../frontend
+npm install
+npm run dev
+```
 
 ---
 
-> 💬 This project demonstrates my autonomy, mastery of modern full-stack development, security, agile project management, and ability to deliver a complete, production-ready business solution.  
-> **Hire me to boost your business apps! 🚀**
+## Variables d’environnement 🔐
+
+Copiez le fichier `.env.example` en `.env` dans le dossier `backend` et renseignez les variables nécessaires :
+
+```env
+MONGODB_URL = "mongodb://localhost:27017"
+MONGODB_DB = ""
+
+NSCALE_BASE_URL = "https://inference.api.nscale.com/v1";
+NSCALE_API_KEY = "";
+
+JWT_SECRET = ""
+```
+
+---
+
+## Tests ✅
+
+- Vous pouvez lancer les tests avec :
+```bash
+npm run test
+```
+- Tests manuels disponibles dans `jeux-tests.xlsx`
+- Tests API dans `postman_collection.json`
+
+---
+
+## Déploiement 🌐
+
+Déploiement réalisé sur un VPS personnel :
+- Backend via PM2
+- Front via Next.js build + Nginx
+- Certificat SSL avec Let's Encrypt
+- Fichiers uploadés localement et servis de façon sécurisée
+
+---
+
+## Auteur 🧑‍💻
+
+Développé par **Hugo Chilemme** – dans le cadre du projet de fin d'études RNCP niveau 6.
+
+---
+
+## Licence 📄
+
+Projet interne à vocation open source (licence à venir).

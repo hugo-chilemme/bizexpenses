@@ -1,5 +1,5 @@
 
-import util from 'util';
+const util = require('util');
 
 
 console.log = function() {

@@ -19,6 +19,9 @@ const config = {
       },
     },
     extend: {
+      fontSize: {
+        xxs: ["0.625rem", { lineHeight: "0.875rem" }], // 10px font, 14px line-height
+      },
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },

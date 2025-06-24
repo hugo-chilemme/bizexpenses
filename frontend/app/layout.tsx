@@ -3,6 +3,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Lexend_Deca as FontSans } from "next/font/google";
+import { UserProvider } from "@/components/context/User";
 import "./globals.css";
 
 const fontSans = FontSans({
@@ -32,7 +33,9 @@ export default function RootLayout({
           defaultTheme="light"
           disableTransitionOnChange
         >
+          <UserProvider>
           {children}
+          </UserProvider>
           <Toaster richColors position="bottom-center" />
         </ThemeProvider>
       </body>

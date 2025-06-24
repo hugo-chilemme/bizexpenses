@@ -8,8 +8,11 @@ import { Loader2, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import AnimatedLogo from "@/components/AnimatedLogo";
 import { toast } from 'sonner';
+import ApiController from "@/lib/api-controller";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
+	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -20,27 +23,27 @@ export default function Page() {
 		setLoading(true);
 
 		// fake wait to simulate async validation
-		await new Promise((resolve) => setTimeout(resolve, 2500));
-		setLoading(false);
 
 		if (!email || !/\S+@\S+\.\S+/.test(email)) {
 			toast.error("Veuillez entrer une adresse e-mail valide.");
-			return;
+			return setLoading(false);
 		}
 
 		const disallowedEmailsDomain = ["gmail.com", "yahoo.com", "hotmail.com"];
 		const emailDomain = email.split("@")[1];
 		if (disallowedEmailsDomain.includes(emailDomain)) {
 			toast.error("Veuillez utiliser une adresse e-mail professionnelle.");
-			return;
+			return setLoading(false);
 		}
 
+		
 		setTimeout(() => {
+			setLoading(false);
 			setStep("password");
 		}, 1000);
 	};
 
-	const handlePasswordSubmit = (e: React.FormEvent) => {
+	const handlePasswordSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!password) {
 			toast.error("Veuillez entrer votre mot de passe.");
@@ -48,10 +51,23 @@ export default function Page() {
 		}
 		setLoading(true);
 		// Simulate async login
+		const response: any = await ApiController("signin", "POST", { email, password });
+
+		if (response.status === "error")
+		{
+			console.log("Login error:", response);
+			toast.error(response.error || "Erreur lors de la connexion. Veuillez réessayer.");
+			return setLoading(false);
+		}
+
+		toast.success("Connexion réussie !");
+
+		localStorage.setItem("authorization", response.data.authorization);
+		localStorage.setItem("uuid", response.data.user.uuid);
+
 		setTimeout(() => {
 			setLoading(false);
-			toast.success("Connexion réussie !");
-			// Rediriger ou autre logique ici
+			router.push("/dashboard");
 		}, 1500);
 	};
 

@@ -1,4 +1,4 @@
-import fs from 'fs';
+const fs = require('fs');
 
 /*
     context: use system nextjs
@@ -7,11 +7,11 @@ import fs from 'fs';
     index.js : route (exemple: /page/index.js => /page)
 */
 
-export default function routes(version: string): Record<string, string> {
+module.exports = (version) => {
 
-    let routesList: Record<string, string> = {};
+    let routesList = {};
 
-    function recursive(path: string, routes: Record<string, string> = {}, base: string = ''): void {
+    function recursive(path, routes = {}, base = '') {
         fs.readdirSync(path).forEach(file => {
             if (fs.lstatSync(`${path}/${file}`).isDirectory()) {
                 let newBase = base;
@@ -20,8 +20,7 @@ export default function routes(version: string): Record<string, string> {
                 }
                 recursive(`${path}/${file}`, routes, newBase);
             } else {
-                let route = file.replace('.ts', '');
-                console.log(route);
+                let route = file.replace('.js', '');
 
                 // Handle index.js as root of the folder
                 if (route === 'index') {
@@ -49,8 +48,6 @@ export default function routes(version: string): Record<string, string> {
         delete routesList[route];
         routesList[route] = path;
     }
-
-    console.log(routesList);
 
     return routesList;
 }

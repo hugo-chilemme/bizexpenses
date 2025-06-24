@@ -6,19 +6,18 @@
   "author": "hugo-chilemme <hugo.chilemme@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "^2.2.0",
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
-    "dotenv": "^16.4.7",
+    "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "module-alias": "^2.2.3",
-    "mongodb": "^6.17.0",
+    "mongodb": "^6.13.0",
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
     "stripe": "^17.7.0",
-    "ts-node": "^10.9.2",
     "uuid": "^11.0.5"
   },
   "_moduleAliases": {
@@ -26,14 +25,7 @@
     "@v1": "src/versions/v1/"
   },
   "scripts": {
-    "start": "tsc && node dist/index.js",
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' index.ts"
-  },
-  "devDependencies": {
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.3",
-    "@types/jsonwebtoken": "^9.0.9",
-    "@types/node": "^22.15.30",
-    "typescript": "^5.8.3"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   }
 }

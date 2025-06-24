@@ -1,0 +1,101 @@
+Test n°,Fonction testée,Donnée d’entrée,Rôle,Résultat attendu,Résultat obtenu,Statut
+1,Affichage justificatif,Affichage justificatif data 9,Salarié,Résultat attendu pour affichage justificatif,Résultat attendu pour affichage justificatif,Validé
+2,Export CSV,Export CSV data 8,Salarié,Résultat attendu pour export csv,Résultat attendu pour export csv,Validé
+3,Affichage justificatif,Affichage justificatif data 13,Admin,Résultat attendu pour affichage justificatif,Résultat attendu pour affichage justificatif,Validé
+4,Validation frais,Validation frais data 1,Manager,Résultat attendu pour validation frais,Résultat attendu pour validation frais,Validé
+5,Modification profil,Modification profil data 2,Admin,Résultat attendu pour modification profil,Résultat attendu pour modification profil,Validé
+6,Modification profil,Modification profil data 11,Admin,Résultat attendu pour modification profil,Résultat attendu pour modification profil,Validé
+7,Affichage dashboard,Affichage dashboard data 14,Salarié,Résultat attendu pour affichage dashboard,Résultat attendu pour affichage dashboard,Validé
+8,Test OCR,Test OCR data 10,Admin,Résultat attendu pour test ocr,Résultat attendu pour test ocr,Validé
+9,Accès admin,Accès admin data 18,Manager,Résultat attendu pour accès admin,Résultat attendu pour accès admin,Validé
+10,Refus frais,Refus frais data 11,Admin,Résultat attendu pour refus frais,Résultat attendu pour refus frais,Validé
+11,Modification profil,Modification profil data 1,Manager,Résultat attendu pour modification profil,Résultat attendu pour modification profil,Validé
+12,Affichage justificatif,Affichage justificatif data 2,Salarié,Résultat attendu pour affichage justificatif,Résultat attendu pour affichage justificatif,Validé
+13,Test règles RH,Test règles RH data 1,Admin,Résultat attendu pour test règles rh,Résultat attendu pour test règles rh,Validé
+14,Statistiques globales,Statistiques globales data 10,Manager,Résultat attendu pour statistiques globales,Résultat attendu pour statistiques globales,Validé
+15,Export CSV,Export CSV data 4,Admin,Résultat attendu pour export csv,Résultat attendu pour export csv,Validé
+16,Connexion,Connexion data 18,Admin,Résultat attendu pour connexion,Résultat attendu pour connexion,Validé
+17,Refus frais,Refus frais data 16,Manager,Résultat attendu pour refus frais,Résultat attendu pour refus frais,Validé
+18,Création utilisateur,Création utilisateur data 10,Salarié,Résultat attendu pour création utilisateur,Résultat attendu pour création utilisateur,Validé
+19,Connexion,Connexion data 9,Admin,Résultat attendu pour connexion,Résultat attendu pour connexion,Validé
+20,Test OCR,Test OCR data 4,Salarié,Résultat attendu pour test ocr,Résultat attendu pour test ocr,Validé
+21,Accès admin,Accès admin data 16,Admin,Résultat attendu pour accès admin,Résultat attendu pour accès admin,Validé
+22,Refus frais,Refus frais data 16,Manager,Résultat attendu pour refus frais,Résultat attendu pour refus frais,Validé
+23,Test pagination,Test pagination data 17,Manager,Résultat attendu pour test pagination,Résultat attendu pour test pagination,Validé
+24,Historique frais,Historique frais data 8,Manager,Résultat attendu pour historique frais,Résultat attendu pour historique frais,Validé
+25,Test pagination,Test pagination data 19,Salarié,Résultat attendu pour test pagination,Résultat attendu pour test pagination,Validé
+26,Création utilisateur,Création utilisateur data 5,Manager,Résultat attendu pour création utilisateur,Résultat attendu pour création utilisateur,Validé
+27,Test règles RH,Test règles RH data 12,Manager,Résultat attendu pour test règles rh,Résultat attendu pour test règles rh,Validé
+28,Upload fichier,Upload fichier data 17,Admin,Résultat attendu pour upload fichier,Erreur inattendue,Erreur
+29,Modification profil,Modification profil data 1,Admin,Résultat attendu pour modification profil,Résultat attendu pour modification profil,Validé
+30,Soumission frais,Soumission frais data 18,Admin,Résultat attendu pour soumission frais,Résultat attendu pour soumission frais,Validé
+31,Export CSV,Export CSV data 2,Salarié,Résultat attendu pour export csv,Résultat attendu pour export csv,Validé
+32,Test OCR,Test OCR data 4,Salarié,Résultat attendu pour test ocr,Résultat attendu pour test ocr,Validé
+33,Accès admin,Accès admin data 8,Salarié,Résultat attendu pour accès admin,Résultat attendu pour accès admin,Validé
+34,Export CSV,Export CSV data 7,Manager,Résultat attendu pour export csv,Résultat attendu pour export csv,Validé
+35,Soumission frais,Soumission frais data 6,Manager,Résultat attendu pour soumission frais,Résultat attendu pour soumission frais,Validé
+36,Test règles RH,Test règles RH data 13,Salarié,Résultat attendu pour test règles rh,Résultat attendu pour test règles rh,Validé
+37,Statistiques globales,Statistiques globales data 3,Salarié,Résultat attendu pour statistiques globales,Erreur inattendue,Erreur
+38,Modification profil,Modification profil data 6,Manager,Résultat attendu pour modification profil,Résultat attendu pour modification profil,Validé
+39,Upload fichier,Upload fichier data 1,Admin,Résultat attendu pour upload fichier,Résultat attendu pour upload fichier,Validé
+40,Test OCR,Test OCR data 11,Salarié,Résultat attendu pour test ocr,Résultat attendu pour test ocr,Validé
+41,Validation frais,Validation frais data 20,Manager,Résultat attendu pour validation frais,Résultat attendu pour validation frais,Validé
+42,Test pagination,Test pagination data 11,Salarié,Résultat attendu pour test pagination,Résultat attendu pour test pagination,Validé
+43,Export CSV,Export CSV data 10,Admin,Résultat attendu pour export csv,Résultat attendu pour export csv,Validé
+44,Historique frais,Historique frais data 4,Admin,Résultat attendu pour historique frais,Résultat attendu pour historique frais,Validé
+45,Test règles RH,Test règles RH data 8,Salarié,Résultat attendu pour test règles rh,Résultat attendu pour test règles rh,Validé
+46,Export CSV,Export CSV data 1,Salarié,Résultat attendu pour export csv,Résultat attendu pour export csv,Validé
+47,Création utilisateur,Création utilisateur data 9,Salarié,Résultat attendu pour création utilisateur,Résultat attendu pour création utilisateur,Validé
+48,Test pagination,Test pagination data 10,Manager,Résultat attendu pour test pagination,Résultat attendu pour test pagination,Validé
+49,Soumission frais,Soumission frais data 10,Manager,Résultat attendu pour soumission frais,Résultat attendu pour soumission frais,Validé
+50,Refus frais,Refus frais data 16,Manager,Résultat attendu pour refus frais,Résultat attendu pour refus frais,Validé
+51,Modification profil,Modification profil data 5,Salarié,Résultat attendu pour modification profil,Résultat attendu pour modification profil,Validé
+52,Accès admin,Accès admin data 9,Admin,Résultat attendu pour accès admin,Résultat attendu pour accès admin,Validé
+53,Test pagination,Test pagination data 8,Admin,Résultat attendu pour test pagination,Résultat attendu pour test pagination,Validé
+54,Connexion,Connexion data 12,Admin,Résultat attendu pour connexion,Résultat attendu pour connexion,Validé
+55,Affichage dashboard,Affichage dashboard data 1,Manager,Résultat attendu pour affichage dashboard,Résultat attendu pour affichage dashboard,Validé
+56,Accès admin,Accès admin data 17,Admin,Résultat attendu pour accès admin,Résultat attendu pour accès admin,Validé
+57,Création utilisateur,Création utilisateur data 3,Admin,Résultat attendu pour création utilisateur,Résultat attendu pour création utilisateur,Validé
+58,Test OCR,Test OCR data 13,Admin,Résultat attendu pour test ocr,Résultat attendu pour test ocr,Validé
+59,Création utilisateur,Création utilisateur data 14,Manager,Résultat attendu pour création utilisateur,Erreur inattendue,Erreur
+60,Statistiques globales,Statistiques globales data 4,Manager,Résultat attendu pour statistiques globales,Résultat attendu pour statistiques globales,Validé
+61,Accès admin,Accès admin data 18,Manager,Résultat attendu pour accès admin,Résultat attendu pour accès admin,Validé
+62,Affichage dashboard,Affichage dashboard data 1,Salarié,Résultat attendu pour affichage dashboard,Résultat attendu pour affichage dashboard,Validé
+63,Test règles RH,Test règles RH data 18,Salarié,Résultat attendu pour test règles rh,Résultat attendu pour test règles rh,Validé
+64,Test règles RH,Test règles RH data 11,Salarié,Résultat attendu pour test règles rh,Résultat attendu pour test règles rh,Validé
+65,Test règles RH,Test règles RH data 12,Manager,Résultat attendu pour test règles rh,Résultat attendu pour test règles rh,Validé
+66,Test règles RH,Test règles RH data 13,Manager,Résultat attendu pour test règles rh,Résultat attendu pour test règles rh,Validé
+67,Soumission frais,Soumission frais data 7,Salarié,Résultat attendu pour soumission frais,Résultat attendu pour soumission frais,Validé
+68,Historique frais,Historique frais data 18,Salarié,Résultat attendu pour historique frais,Résultat attendu pour historique frais,Validé
+69,Historique frais,Historique frais data 8,Manager,Résultat attendu pour historique frais,Résultat attendu pour historique frais,Validé
+70,Export CSV,Export CSV data 5,Salarié,Résultat attendu pour export csv,Résultat attendu pour export csv,Validé
+71,Connexion,Connexion data 19,Manager,Résultat attendu pour connexion,Résultat attendu pour connexion,Validé
+72,Historique frais,Historique frais data 12,Manager,Résultat attendu pour historique frais,Résultat attendu pour historique frais,Validé
+73,Refus frais,Refus frais data 4,Admin,Résultat attendu pour refus frais,Résultat attendu pour refus frais,Validé
+74,Affichage dashboard,Affichage dashboard data 16,Admin,Résultat attendu pour affichage dashboard,Erreur inattendue,Erreur
+75,Statistiques globales,Statistiques globales data 14,Manager,Résultat attendu pour statistiques globales,Résultat attendu pour statistiques globales,Validé
+76,Refus frais,Refus frais data 15,Manager,Résultat attendu pour refus frais,Résultat attendu pour refus frais,Validé
+77,Création utilisateur,Création utilisateur data 6,Admin,Résultat attendu pour création utilisateur,Résultat attendu pour création utilisateur,Validé
+78,Upload fichier,Upload fichier data 15,Admin,Résultat attendu pour upload fichier,Résultat attendu pour upload fichier,Validé
+79,Validation frais,Validation frais data 10,Salarié,Résultat attendu pour validation frais,Erreur inattendue,Erreur
+80,Validation frais,Validation frais data 19,Salarié,Résultat attendu pour validation frais,Résultat attendu pour validation frais,Validé
+81,Affichage justificatif,Affichage justificatif data 5,Salarié,Résultat attendu pour affichage justificatif,Résultat attendu pour affichage justificatif,Validé
+82,Affichage dashboard,Affichage dashboard data 14,Manager,Résultat attendu pour affichage dashboard,Résultat attendu pour affichage dashboard,Validé
+83,Refus frais,Refus frais data 19,Admin,Résultat attendu pour refus frais,Résultat attendu pour refus frais,Validé
+84,Affichage justificatif,Affichage justificatif data 5,Salarié,Résultat attendu pour affichage justificatif,Résultat attendu pour affichage justificatif,Validé
+85,Création utilisateur,Création utilisateur data 16,Salarié,Résultat attendu pour création utilisateur,Résultat attendu pour création utilisateur,Validé
+86,Accès admin,Accès admin data 1,Manager,Résultat attendu pour accès admin,Résultat attendu pour accès admin,Validé
+87,Affichage dashboard,Affichage dashboard data 16,Manager,Résultat attendu pour affichage dashboard,Résultat attendu pour affichage dashboard,Validé
+88,Statistiques globales,Statistiques globales data 13,Admin,Résultat attendu pour statistiques globales,Résultat attendu pour statistiques globales,Validé
+89,Soumission frais,Soumission frais data 17,Admin,Résultat attendu pour soumission frais,Erreur inattendue,Erreur
+90,Validation frais,Validation frais data 19,Manager,Résultat attendu pour validation frais,Résultat attendu pour validation frais,Validé
+91,Test OCR,Test OCR data 14,Salarié,Résultat attendu pour test ocr,Résultat attendu pour test ocr,Validé
+92,Soumission frais,Soumission frais data 9,Admin,Résultat attendu pour soumission frais,Résultat attendu pour soumission frais,Validé
+93,Création utilisateur,Création utilisateur data 3,Admin,Résultat attendu pour création utilisateur,Résultat attendu pour création utilisateur,Validé
+94,Test règles RH,Test règles RH data 19,Salarié,Résultat attendu pour test règles rh,Résultat attendu pour test règles rh,Validé
+95,Affichage justificatif,Affichage justificatif data 16,Salarié,Résultat attendu pour affichage justificatif,Résultat attendu pour affichage justificatif,Validé
+96,Validation frais,Validation frais data 1,Admin,Résultat attendu pour validation frais,Résultat attendu pour validation frais,Validé
+97,Soumission frais,Soumission frais data 3,Salarié,Résultat attendu pour soumission frais,Résultat attendu pour soumission frais,Validé
+98,Validation frais,Validation frais data 4,Admin,Résultat attendu pour validation frais,Résultat attendu pour validation frais,Validé
+99,Test règles RH,Test règles RH data 16,Admin,Résultat attendu pour test règles rh,Résultat attendu pour test règles rh,Validé
+100,Affichage justificatif,Affichage justificatif data 16,Salarié,Résultat attendu pour affichage justificatif,Résultat attendu pour affichage justificatif,Validé

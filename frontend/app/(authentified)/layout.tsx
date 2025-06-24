@@ -149,6 +149,9 @@ export default function Layout({
 					<AnimatedLogo />
 				</div>
 				<div className="px-6 my-24 mr-6 flex flex-1 flex-col gap-4 w-full">
+					<Link href="/dashboard/expenses/new" className="font-medium bg-indigo-500 p-3 text-white rounded-2xl flex items-center justify-center mb-6 hover:bg-indigo-600 transition-colors">
+						Soumettre mes notes de frais
+					</Link>
 					{navLinks}
 				</div>
 				{userMenu}

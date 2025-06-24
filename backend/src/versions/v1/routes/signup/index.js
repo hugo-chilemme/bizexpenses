@@ -33,12 +33,13 @@ const post = async (req, res) => {
 
         const userId = uuid.v4().replace(/-/g, '');
         const user = {
-                uuid: userId,
-                firstName,
-                lastName,
-                email,
-                password: bcrypt.hashSync(password, 10),
-                role: 'admin',
+			active: true,
+			uuid: userId,
+			firstName,
+			lastName,
+			email,
+			password: bcrypt.hashSync(password, 10),
+			role: 'admin',
         };
 
 	try {
@@ -68,6 +69,17 @@ const post = async (req, res) => {
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			userId: userId,
+			rules: {
+				submission_deadline: 30,
+				alloweds_categories: ['alimentation', 'transport', 'loisirs', 'sante', 'autres'],
+				limits: {
+					alimentation: 25,
+					transport: 25,
+					loisirs: 25,
+					sante: 25,
+					autres: 25
+				}
+			},
 			users: [{id: userId, role: 'owner'}]
 		};
 		const entrepriseInsertResult = await database().collection('entreprises').insertOne(entreprise);
@@ -81,13 +93,13 @@ const post = async (req, res) => {
 			status: 'success',
 			message: 'User created successfully',
 			authorization: `Bearer ${token}`,
-                        user: {
-                                _id: insertResult.insertedId,
-                                firstName: user.firstName,
-                                lastName: user.lastName,
-                                email: user.email,
-                                role: user.role
-                        },
+				user: {
+					_id: insertResult.insertedId,
+					firstName: user.firstName,
+					lastName: user.lastName,
+					email: user.email,
+					role: user.role
+				},
 			entrepriseUuid: entrepriseInsertResult.insertedId,
 		});
 	} catch (err) {

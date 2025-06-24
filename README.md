@@ -1,36 +1,36 @@
 # BizExpenses
 
-BizExpenses est une application conçue pour simplifier la gestion des notes de frais en entreprise 🧾  
-Chaque salarié peut soumettre ses justificatifs, un manager les valide ou les refuse, et les RH pilotent l'ensemble du système.
+BizExpenses is an application designed to simplify expense report management in companies 🧾  
+Each employee can submit receipts, a manager approves or rejects them, and HR oversees the entire system.
 
 ---
 
-## Fonctionnalités principales 💡
+## Main Features 💡
 
-- Authentification sécurisée par JWT
-- Gestion des rôles : salarié, manager, admin
-- Création de frais avec justificatif en ligne
-- Validation ou refus des dépenses par les managers
-- Configuration des règles (plafond, catégorie interdite, délai) par les RH
-- Export CSV des dépenses validées
-- Scanning automatique des tickets (OCR)
-- Design responsive adapté au mobile
-
----
-
-## Technologies utilisées 🛠️
-
-- **Frontend** : Next.js, Tailwind CSS, TypeScript
-- **Backend** : Node.js, Express, TypeScript
-- **Base de données** : MongoDB
-- **Fichiers** : Multer (stockage local)
-- **Sécurité** : JWT, Bcrypt
-- **CI/CD** : GitHub Actions
-- **Déploiement** : VPS personnel (Nginx + PM2)
+- Secure authentication with JWT
+- Role management: employee, manager, admin
+- Create expenses with online receipt upload
+- Managers can approve or reject expenses
+- HR can configure rules (limits, forbidden categories, deadlines)
+- Export validated expenses to CSV
+- Automatic receipt scanning (OCR)
+- Responsive design for mobile
 
 ---
 
-## Arborescence du projet 📁
+## Technologies Used 🛠️
+
+- **Frontend**: Next.js, Tailwind CSS, TypeScript
+- **Backend**: Node.js, Express, TypeScript
+- **Database**: MongoDB
+- **File Handling**: Multer (local storage)
+- **Security**: JWT, Bcrypt
+- **CI/CD**: GitHub Actions
+- **Deployment**: Personal VPS (Nginx + PM2)
+
+---
+
+## Project Structure 📁
 
 ```
 bizexpenses/
@@ -49,11 +49,11 @@ bizexpenses/
 
 ---
 
-## Installation locale ⚙️
+## Local Installation ⚙️
 
-1. Clonez le dépôt
-2. Installez les dépendances
-3. Lancez le backend puis le frontend
+1. Clone the repository
+2. Install dependencies
+3. Start the backend, then the frontend
 
 ```bash
 git clone https://github.com/ton-user/bizexpenses.git
@@ -69,9 +69,9 @@ npm run dev
 
 ---
 
-## Variables d’environnement 🔐
+## Environment Variables 🔐
 
-Copiez le fichier `.env.example` en `.env` dans le dossier `backend` et renseignez les variables nécessaires :
+Copy the `.env.example` file to `.env` in the `backend` folder and fill in the required variables:
 
 ```env
 MONGODB_URL = "mongodb://localhost:27017"
@@ -87,31 +87,32 @@ JWT_SECRET = ""
 
 ## Tests ✅
 
-- Vous pouvez lancer les tests avec :
+- Run tests with:
 ```bash
 npm run test
 ```
-- Tests manuels disponibles dans `jeux-tests.xlsx`
-- Tests API dans `postman_collection.json`
+- Manual tests available in `jeux-tests.xlsx`
+- API tests in `postman_collection.json`
 
 ---
 
-## Déploiement 🌐
+## Deployment 🌐
 
-Déploiement réalisé sur un VPS personnel :
+Deployed on a personal VPS:
 - Backend via PM2
-- Front via Next.js build + Nginx
-- Certificat SSL avec Let's Encrypt
-- Fichiers uploadés localement et servis de façon sécurisée
+- Frontend via Next.js build + Nginx
+- SSL certificate with Let's Encrypt
+- Files uploaded locally and served securely
 
 ---
 
-## Auteur 🧑‍💻
+## Author 🧑‍💻
 
-Développé par **Hugo Chilemme** – dans le cadre du projet de fin d'études RNCP niveau 6.
+Developed by **Hugo Chilemme** – as part of the RNCP level 6 graduation project.
 
 ---
 
-## Licence 📄
+## License 📄
 
-Projet interne à vocation open source (licence à venir).
+Internal project, open source license coming soon.
+

@@ -1,4 +1,4 @@
-const database = require('../../utils/database');
+const database = require('../../../utils/database');
 
 const ALLOWED_ROLES = ['admin', 'manager', 'employee'];
 

@@ -99,8 +99,11 @@ export default function Page() {
 		toast.success("Inscription réussie !");
 
 
-		localStorage.setItem("authorization", response.authorization);
-		localStorage.setItem("uuid", response.user.uuid);
+                localStorage.setItem("authorization", response.authorization);
+                localStorage.setItem("uuid", response.user.uuid);
+                if (response.user.role) {
+                        localStorage.setItem("role", response.user.role);
+                }
 
 		router.push(`/dashboard`);
 	};

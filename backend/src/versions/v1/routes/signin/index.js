@@ -40,12 +40,13 @@ const post = async (req, res) => {
 			status: 'success',
 			data: {
 				authorization: `Bearer ${token}`,
-				user: {
-					uuid: user.uuid,
-					firstName: user.firstName,
-					lastName: user.lastName,
-					email: user.email
-				}
+                                user: {
+                                        uuid: user.uuid,
+                                        firstName: user.firstName,
+                                        lastName: user.lastName,
+                                        email: user.email,
+                                        role: user.role
+                                }
 			}
 		});
 	} catch (err) {

@@ -31,14 +31,15 @@ const post = async (req, res) => {
 
 
 
-	const userId = uuid.v4().replace(/-/g, '');
-	const user = { 
-		uuid: userId, 
-		firstName, 
-		lastName, 
-		email,
-		password: bcrypt.hashSync(password, 10),
-	};
+        const userId = uuid.v4().replace(/-/g, '');
+        const user = {
+                uuid: userId,
+                firstName,
+                lastName,
+                email,
+                password: bcrypt.hashSync(password, 10),
+                role: 'admin',
+        };
 
 	try {
 
@@ -80,12 +81,13 @@ const post = async (req, res) => {
 			status: 'success',
 			message: 'User created successfully',
 			authorization: `Bearer ${token}`,
-			user: {
-				_id: insertResult.insertedId,
-				firstName: user.firstName,
-				lastName: user.lastName,
-				email: user.email
-			},
+                        user: {
+                                _id: insertResult.insertedId,
+                                firstName: user.firstName,
+                                lastName: user.lastName,
+                                email: user.email,
+                                role: user.role
+                        },
 			entrepriseUuid: entrepriseInsertResult.insertedId,
 		});
 	} catch (err) {

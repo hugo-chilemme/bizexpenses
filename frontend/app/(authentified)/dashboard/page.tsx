@@ -10,6 +10,7 @@ import { useUser } from "@/components/context/User";
 
 import SalaryDashboard from "./adaptatives/salary";
 import AdminDashboard from "./adaptatives/admin";
+import HrDashboard from "./adaptatives/rh";
 
 export default function Page() {
 
@@ -19,6 +20,7 @@ export default function Page() {
 		<>
 			{ user.entreprise.role === "owner" && <AdminDashboard /> }
 			{ user.entreprise.role === "user" && <SalaryDashboard /> }
+			{ user.entreprise.role === "hr" && <HrDashboard /> }
 		</>
 	);
 }

@@ -37,7 +37,7 @@ const post = (req, res) => {
       database().collection('expenses').insertOne({
         createdAt: new Date(),
         updatedAt: new Date(),
-        status: 'pending',
+        status: 'preparing',
         image: `${id}.png`,
         data: data,
         userId: req.user._id,

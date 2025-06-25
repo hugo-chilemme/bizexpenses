@@ -7,6 +7,9 @@ import Link from "next/link";
 import { useUser } from "@/components/context/User";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { FaTachometerAlt, FaCog, FaUtensils, FaUsers, FaGavel } from "react-icons/fa";
+
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -25,10 +28,16 @@ type RenderLinkProps = {
 	onClick?: () => void;
 };
 
-function RenderLink({ href, icon, label, active, onClick }: RenderLinkProps) {
+function RenderLink({ href, icon, label, onClick }: RenderLinkProps) {
+	const pathname = usePathname();
+	const active = (pathname === "/dashboard" && href === "/")  || pathname.endsWith(href);
+	
+	console.log("Active link:", active, "Current path:", pathname, "Link href:", href);
+
+
 	return (
 		<Link
-			href={href}
+			href={'/dashboard' + href}
 			onClick={onClick}
 			className={`cursor-pointer px-4 font-semibold flex items-center gap-6 py-4 rounded-xl
 				${active
@@ -55,19 +64,17 @@ export default function Layout({
 	const router = useRouter();
 	const { user, logout } = useUser();
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
 	if (!user) {
 		router.push("/signin");
 		return null;
 	}
 
-	const navLinks = (
+	const navSalary = (
 		<>
 			<RenderLink
-				href="/dashboard"
+				href="/"
 				icon={<RxDashboard className="w-6 h-6" />}
 				label="Dashboard"
-				active={true}
 				onClick={() => setMobileMenuOpen(false)}
 			/>
 			<RenderLink
@@ -81,6 +88,76 @@ export default function Layout({
 				icon={<IoSettingsOutline className="w-6 h-6" />}
 				label="Paramètres"
 				onClick={() => setMobileMenuOpen(false)}
+			/>
+		</>
+	);
+
+	const navLinks = (
+		<>
+			<RenderLink
+				href="/"
+				icon={<RxDashboard className="w-6 h-6" />}
+				label="Dashboard"
+				onClick={() => setMobileMenuOpen(false)}
+			/>
+			<RenderLink
+				href="/expenses/pending"
+				icon={<IoFastFoodOutline className="w-6 h-6" />}
+				label="Notes de frais en attente"
+				onClick={() => setMobileMenuOpen(false)}
+			/>
+			<RenderLink
+				href="/users"
+				icon={<FaUsers className="w-6 h-6" />}
+				label="Gestion des employés"	
+				onClick={() => setMobileMenuOpen(false)}
+			/>
+			<RenderLink
+				href="/expenses"
+				icon={<FaUtensils className="w-6 h-6" />}
+				label="Mes notes de frais"
+				onClick={() => setMobileMenuOpen(false)}
+			/>
+			<RenderLink
+				href="/rules"
+				icon={<FaGavel className="w-6 h-6" />}
+				label="Règles de l'entreprise"
+				onClick={() => setMobileMenuOpen(false)}
+			/>
+			<RenderLink
+				href="/settings"
+				icon={<FaCog className="w-6 h-6" />}
+				label="Paramètres"
+				onClick={() => setMobileMenuOpen(false)}
+			/>
+		</>
+	);
+
+	const navAdmin = (
+		<>
+			<RenderLink
+				href="/"
+				icon={<RxDashboard className="w-6 h-6" />}
+				label="Dashboard"
+				onClick={() => setMobileMenuOpen(false)}
+			/>
+			<RenderLink
+				href="/users"
+				icon={<IoFastFoodOutline className="w-6 h-6" />}
+				label="Gestion des employés"
+				onClick={() => setMobileMenuOpen(false)}
+			/>
+			<RenderLink
+				href="/rules"
+				icon={<IoFastFoodOutline className="w-6 h-6" />}
+				label="Règles de l'entreprise"
+				onClick={() => setMobileMenuOpen(false)}
+			/>
+			<RenderLink
+				href="/settings"
+				icon={<IoSettingsOutline className="w-6 h-6" />}
+				label="Paramètres"
+				onClick={() => setMobileMenuOpen(false)}	
 			/>
 		</>
 	);
@@ -125,7 +202,7 @@ export default function Layout({
 			<nav className="md:hidden flex flex-col w-full bg-white rounded-2xl shadow px-4 py-2 z-20">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-2">
-						<AnimatedLogo />
+						<AnimatedLogo width={5} />
 					</div>
 					<button
 						className="p-2"
@@ -137,27 +214,33 @@ export default function Layout({
 				</div>
 				{mobileMenuOpen && (
 					<div className="flex flex-col gap-2 mt-2">
-						{navLinks}
+						{user.entreprise.role === "user" && navSalary}
+						{user.entreprise.role === "hr" && navLinks}
+						{user.entreprise.role === "owner" && navAdmin}
+
 						{userMenu}
 					</div>
 				)}
 			</nav>
 
 			{/* Desktop Sidebar */}
-			<aside className="hidden md:flex w-96 text-white py-6 flex-col justify-start items-start">
+			<aside className="fixed top-0 hidden md:flex w-96 text-white h-screen py-6 flex-col justify-start items-start pr-6">
 				<div className="flex items-center w-full justify-center gap-4 px-6">
 					<AnimatedLogo />
 				</div>
-				<div className="px-6 my-24 mr-6 flex flex-1 flex-col gap-4 w-full">
+				<div className="px-6 my-12 mr-6 flex flex-1 flex-col gap-4 w-full">
 					<Link href="/dashboard/expenses/new" className="font-medium bg-indigo-500 p-3 text-white rounded-2xl flex items-center justify-center mb-6 hover:bg-indigo-600 transition-colors">
 						Soumettre mes notes de frais
 					</Link>
-					{navLinks}
+					{user.entreprise.role === "user" && navSalary}
+					{user.entreprise.role === "hr" && navLinks}
+					{user.entreprise.role === "owner" && navAdmin}
 				</div>
 				{userMenu}
 			</aside>
 
 			{/* Main Content */}
+			<div className="w-96 hidden md:flex" />
 			<div className="flex-1 bg-blue-100/50 rounded-2xl p-2 md:p-0">{children}</div>
 		</main>
 	);

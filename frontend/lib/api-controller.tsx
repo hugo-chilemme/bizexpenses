@@ -3,7 +3,6 @@ export interface ApiResponse<T = any> {
 	status: number;
 	message?: string;
 }
-
 export default async function fetchApi<T = any>(
 	url: string,
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
@@ -23,16 +22,22 @@ export default async function fetchApi<T = any>(
 		if (!options.headers) options.headers = {};
 		(options.headers as Headers).Accept = 'application/json';
 		(options.headers as Headers)['Content-Type'] = 'application/json';
-		options.method = method;	
+		options.method = method;
 
-		if (body) {
+		let fetchUrl = '/api/v1/' + url;
+
+		// Ajoute le body dans l'URL si ce n'est pas un POST
+		if (body && method !== 'POST') {
+			const params = new URLSearchParams(body).toString();
+			fetchUrl += (fetchUrl.includes('?') ? '&' : '?') + params;
+		} else if (body) {
 			options.body = JSON.stringify(body);
 		}
 
 		console.log(body);
-		console.log('fetchApi', '/api/v1/' + url, options);
+		console.log('fetchApi', fetchUrl, options);
 
-		const response = await fetch('/api/v1/' + url, options);
+		const response = await fetch(fetchUrl, options);
 		const data = await response.json().catch(() => null);
 
 		console.log('fetchApi', url, options, data);

@@ -9,6 +9,7 @@ import ApiController from "@/lib/api-controller";
 import { useEffect, useState } from "react";
 import { FaRegBuilding } from "react-icons/fa";
 import { MdOutlineFileUpload } from "react-icons/md";
+import { TfiTicket } from "react-icons/tfi";
 
 export default function SalaryDashboard() {
 
@@ -70,10 +71,22 @@ export default function SalaryDashboard() {
 					)}
 					<p className="text-neutral-700 text-balance">Passez ce délai, vos notes de frais seront envoyées le mois suivant.</p>
 				</div>
+				<div className="flex-1 flex flex-col gap-4 max-w-md bg-indigo-100/50 p-6 rounded-2xl">
+					<TfiTicket className="w-8 h-8 text-indigo-600" />
+					<h2 className="text-lg text-indigo-600 font-semibold">Soumettez vos notes de frais</h2>
+					<Link href="/dashboard/expenses/new" className="text-white p-2 rounded-lg flex items-center justify-center gap-2 bg-indigo-500 text-center font-semibold hover:bg-indigo-600 transition-colors">
+						Envoyer mes notes de frais <LuChevronRight className="inline-block w-4 h-4" />
+					</Link>
+				</div>
 			</div>
 
 			<div className="mt-12 w-full">
-				<h2 className="text-lg text-indigo-600 font-semibold mb-4">Vos dernières notes de frais</h2>
+				<div className="flex justify-between items-center mb-4">
+					<h2 className="text-lg text-indigo-600 font-semibold mb-4">Vos dernières notes de frais</h2>
+					<Link href="/dashboard/expenses" className="flex items-center font-medium justify-center gap-2 text-center text-indigo-600 hover:underline">
+						Voir toutes les notes de frais <LuChevronRight className="inline-block w-4 h-4" />
+					</Link>
+				</div>
 				<div className="w-full overflow-x-auto">
 					<table className="min-w-full bg-indigo-200/15 rounded-2xl">
 		
@@ -91,9 +104,12 @@ export default function SalaryDashboard() {
 										return dateB - dateA; // Descending: recent first
 									})
 									.map((expense) => (
-										<tr key={expense.id} className="border-b text-sm last:border-b-0 hover:bg-indigo-50 transition-colors">
+										<tr key={expense.id} className="border-b text-sm last:border-b-0 transition-colors">
 											<td className="py-3 px-4 flex flex-col gap-1">
 												<p className="font-medium text-indigo-700">{expense.data.company_name?.value}</p>
+												{ expense.status === "pending" && (
+													<span className="text-neutral-600 text-xs">Votre demande a été transmise à votre service des ressources humaines.</span>
+												)}
 											</td>
 											<td className="py-3 px-4 text-neutral-600">
 												{expense.data.date?.value &&

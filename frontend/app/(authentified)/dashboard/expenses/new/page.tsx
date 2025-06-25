@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import ApiController from "@/lib/api-controller";
 import { toast } from "sonner";
 import { IoCameraOutline } from "react-icons/io5";
+import { useUser } from "@/components/context/User";
 
 type ExpenseAnalysis = any; // Remplacer par le vrai type
 
@@ -17,7 +18,6 @@ const isMobile = typeof window !== "undefined" && /Mobi|Android/i.test(navigator
 
 const FIELDS = [
 	{ key: "company_name", label: "Nom de l'entreprise", type: "text", placeholder: "Nom de l'entreprise" },
-	{ key: "company_address", label: "Adresse de l'entreprise", type: "text", placeholder: "Adresse de l'entreprise" },
 	{ key: "date", label: "Date", type: "date", placeholder: "Date" },
 	{ key: "total_ttc", label: "Total TTC", type: "text", placeholder: "Non disponible" },
 	{ key: "total_vat", label: "Total TVA", type: "text", placeholder: "Non disponible" },
@@ -29,6 +29,7 @@ export default function Page() {
 	const [step, setStep] = useState<"upload" | "processing" | "form" | "review" | "saving">("upload");
 	const [expense, setExpense] = useState<any>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+	const { user } = useUser(); // Assurez-vous que le hook useUser est correctement importé
 
 	// UX: Reset everything
 	const reset = () => {
@@ -127,23 +128,25 @@ export default function Page() {
 		}
 		setStep("saving");
 		try {
-			const res = await fetch(`http://localhost:3002/api/v1/expenses/${expense.rowId}`, {
-				method: "PUT",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ expense: expense.analysis }),
+
+			const response: any = await ApiController(`expenses/${expense.rowId}`, "POST", {
+				expense: expense.analysis,
 			});
-			const data = await res.json();
-			if (data.status === "success") {
+
+			if (response.status === "success") {
 				router.push("/dashboard");
 			} else {
 				alert("Erreur lors de l'enregistrement.");
 				setStep("review");
 			}
-		} catch {
+		} catch (error) {
+			console.error("Network error:", error);
 			alert("Erreur réseau.");
 			setStep("review");
 		}
 	};
+
+	const rules = user.entreprise?.rules;
 
 	// --- UI ---
 	return (
@@ -325,62 +328,75 @@ export default function Page() {
 										</tr>
 									</thead>
 									<tbody>
-										{expense.analysis.items.map((item: any, idx: number) => (
-											<tr key={idx}>
-												<td className="border px-2 py-1">
-													<input
-														type="text"
-														className="w-full bg-transparent border-b border-dotted focus:outline-none"
-														value={item.name?.value || ""}
-														placeholder="Nom"
-														onChange={e => handleItemChange(idx, "name", e.target.value)}
-													/>
-												</td>
-												<td className="border px-2 py-1">
-													<input
-														type="text"
-														className="w-full bg-transparent border-b border-dotted focus:outline-none"
-														value={item.category?.value || ""}
-														placeholder="Catégorie"
-														onChange={e => handleItemChange(idx, "category", e.target.value)}
-													/>
-												</td>
-												<td className="border px-2 py-1">
-													<input
-														type="number"
-														min={1}
-														className="w-full bg-transparent border-b border-dotted focus:outline-none"
-														value={item.quantity?.value ?? ""}
-														placeholder="Quantité"
-														onChange={e => handleItemChange(idx, "quantity", Number(e.target.value))}
-													/>
-												</td>
-												<td className="border px-2 py-1">
-													<input
-														type="number"
-														min={0}
-														step="0.01"
-														className="w-full text-right bg-transparent border-b border-dotted focus:outline-none"
-														value={item.unit_price?.value ?? ""}
-														placeholder="Prix unitaire"
-														onChange={e => handleItemChange(idx, "unit_price", Number(e.target.value))}
-													/>
-												</td>
-												<td className="border px-2 py-1">
-													<input
-														type="number"
-														min={0}
-														step="0.01"
-														className="w-full text-right bg-transparent border-b border-dotted focus:outline-none"
-														value={item.total_price?.value ?? ""}
-														placeholder="Prix total"
-														onChange={e => handleItemChange(idx, "total_price", Number(e.target.value))}
-													/>
-												</td>
-											</tr>
-										))}
+										{expense.analysis.items.map((item: any, idx: number) => {
+											const isCategoryAllowed =
+												!rules?.alloweds_categories ||
+												rules.alloweds_categories.length === 0 ||
+												rules.alloweds_categories.includes(item.category?.value.toLowerCase());
+
+											console.log("isCategoryAllowed", isCategoryAllowed, item.category?.value.toLowerCase(), rules?.alloweds_categories);
+											return (
+												<tr
+													key={idx}
+													className={!isCategoryAllowed ? "bg-red-100" : ""}
+												>
+													<td className="border px-2 py-1 w-96">
+														<input
+															type="text"
+															className="w-full bg-transparent border-b border-dotted focus:outline-none"
+															value={item.name?.value || ""}
+															placeholder="Nom"
+															onChange={e => handleItemChange(idx, "name", e.target.value)}
+														/>
+													</td>
+													<td className="border px-2 py-1">
+														<input
+															type="text"
+															className="w-full bg-transparent border-b border-dotted focus:outline-none"
+															value={item.category?.value || ""}
+															placeholder="Catégorie"
+															onChange={e => handleItemChange(idx, "category", e.target.value)}
+														/>
+													</td>
+													<td className="border px-2 py-1">
+														<input
+															type="number"
+															min={1}
+															className="w-full bg-transparent border-b border-dotted focus:outline-none"
+															value={item.quantity?.value ?? ""}
+															placeholder="Quantité"
+															onChange={e => handleItemChange(idx, "quantity", Number(e.target.value))}
+														/>
+													</td>
+													<td className="border px-2 py-1">
+														<input
+															type="number"
+															min={0}
+															step="0.01"
+															className="w-full text-right bg-transparent border-b border-dotted focus:outline-none"
+															value={item.unit_price?.value ?? ""}
+															placeholder="Prix unitaire"
+															onChange={e => handleItemChange(idx, "unit_price", Number(e.target.value))}
+														/>
+													</td>
+													<td className="border px-2 py-1">
+														<input
+															type="number"
+															min={0}
+															step="0.01"
+															className="w-full text-right bg-transparent border-b border-dotted focus:outline-none"
+															value={item.total_price?.value ?? ""}
+															placeholder="Prix total"
+															onChange={e => handleItemChange(idx, "total_price", Number(e.target.value))}
+														/>
+													</td>
+												</tr>
+											);
+										})}
 									</tbody>
 								</table>
+
+								<p className="mt-6 text-sm text-balance">Les articles avec une catégorie non autorisée seront marqués en rouge, elle ne seront pas prises en compte dans la note de frais.</p>
 							</div>
 						</div>
 					)}

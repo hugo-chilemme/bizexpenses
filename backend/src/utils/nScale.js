@@ -13,7 +13,12 @@ const prompt = `Récupère toutes les informations pertinentes du ticket de cais
 	- Prix total de l'article
 	- Taux de TVA appliqué (si présent)
 	- Montant de la TVA (si présent)
-	- Catégorie de l'article (choisir parmi : "Transports", "Restauration", "Hébergement", "Fournitures", "Alcools", "Autres")
+	- Catégorie de l'article (choisir parmi : 	"Transports",
+	"Restauration",
+	"Hotel",
+	"Fournitures",
+	"Alcools",
+	"Autres", mais n'en invente pas, utilise uniquement celles présentes, tu peux regrouper certains par example Boissons dans Restauration, cependant les bières etc sont à mettre dans Alcools)
 - Total HT (hors taxes)
 - Total TVA (généralement il y a écrit "dont TVA" ou "TVA" suivi du montant)
 - Total TTC (toutes taxes comprises)
@@ -31,6 +36,7 @@ Réponds uniquement au format JSON sans bloc de code, par exemple :
   "company_name": { "value": "Supermarché Paris Centre", "error": false },
   "company_address": { "value": "12 rue de Paris, 75001 Paris", "error": false },
   "date": { "value": "2024-06-15", "error": false },
+  "label": { "value": "Course suite au déplacement à Paris", "error": false },
   "items": [
 	{
 	  "name": { "value": "Baguette", "error": false },

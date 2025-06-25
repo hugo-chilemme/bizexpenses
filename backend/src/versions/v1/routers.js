@@ -99,6 +99,15 @@ async function jwtAuth(req, res, next) {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const {uuid } = decoded;
 
+        const device = await database().collection('devices').findOne({ token, user_uuid: uuid });
+        if (!device) {
+            return res.status(401).json({ status: "error", message: "Invalid token" });
+        }
+
+        if (device.trusted === false) {
+            return res.status(401).json({ status: "error", message: "This device is not trusted, please sign in again" });
+        }
+
         const user = await database().collection('users').findOne({ uuid: uuid });
         if (!user) {
             return res.status(401).json({ status: "error", message: "User not found" });

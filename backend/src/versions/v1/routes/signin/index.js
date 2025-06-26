@@ -11,7 +11,21 @@ const config = {
 	put: {
 	}
 }
-
+/** * Handles user sign-in by validating credentials, generating a JWT token, and managing device trust.
+ * * @async
+ * * @function post
+ * * @param {import('express').Request} req - Express request object, expects `email`, `password`, `userAgent`, `platform`, `language`, and `deviceId`
+ * * @param {import('express').Response} res - Express response object.
+ * * @returns {Promise<void>} Sends a JSON response with the authorization token and user details or an error message.
+ * * @description
+ * * - Validates the presence and types of required fields in the request body.
+ * * - Checks if the user exists in the database and verifies the password.
+ * * - Generates a JWT token for the user and checks if the device is already trusted.		
+ * * - If the device is not trusted, it deletes all previous entries for that device ID and sends a security alert email.
+ * * - Inserts a new device entry with the token and user details, setting the device as trusted if it was already trusted.
+ * * - Returns the authorization token and user details in the response.
+ * * - Handles errors and returns appropriate HTTP status codes and messages for various failure scenarios.
+ */
 const post = async (req, res) => {
 	const { email, password, userAgent, platform, language, deviceId } = req.body;
 
@@ -99,7 +113,20 @@ const post = async (req, res) => {
 	}
 };
 
-
+/**
+ * 	* Handles password reset requests by generating a reset token and sending an email to the user.
+ * * 	* @async
+ * * 	* @function put
+ * * 	* @param {import('express').Request} req - Express request object, expects `email` in query.
+ * * 	* @param {import('express').Response} res - Express response object.
+ * * 	* @returns {Promise<void>} Sends a JSON response with the status of the password reset request or an error message.
+ * * 	* @description
+ * * 	* - Validates the presence of the `email` query parameter.
+ * * 	* - Checks if the user exists in the database.
+ * * 	* - Generates a random reset token and updates the user's record in the database.
+ * * 	* - Sends a password reset email to the user with a link to set a new password.
+ * * 	* - Handles errors and returns appropriate HTTP status codes and messages for various failure scenarios.
+ */
 const put = async (req, res) => {
 	// reset password
 	const { email } = req.query;

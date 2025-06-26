@@ -17,11 +17,17 @@ const get = async (req, res) => {
 	// get data of an expense
 	const { expenseId } = req.params;
 
+
+
 	if (!expenseId) {
 		return res.status(400).json({ status: 'error', error: 'Expense ID is required' });
 	}
 
 	const expense = await database().collection('expenses').findOne({ _id: new ObjectId(expenseId) });
+
+	if (expense.userId.toString() !== req.user._id.toString() && req.user.entreprise.role !== 'owner' && req.user.entreprise.role !== 'hr') {
+		return res.status(403).json({ status: 'error', error: 'Forbidden' });
+	}
 
 	if (!expense) {
 		return res.status(404).json({ status: 'error', error: 'Expense not found' });

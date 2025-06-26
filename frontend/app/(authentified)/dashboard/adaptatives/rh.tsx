@@ -10,10 +10,12 @@ import { useEffect, useState } from "react";
 import { FaRegBuilding } from "react-icons/fa";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { TfiTicket } from "react-icons/tfi";
+import { useRouter } from "next/navigation";
 
 export default function SalaryDashboard() {
 
 	const [expenses, setExpenses] = useState([]);
+	const router = useRouter();
 
 	useEffect(() => {
 		const fetchExpenses = async () => {
@@ -101,17 +103,13 @@ export default function SalaryDashboard() {
 								expenses
 									.slice()
 									.sort((a, b) => {
-										const dateA = a.data.date?.value
-											? new Date(a.data.date.value.replace(/(\d{2})\.(\d{2})\.(\d{4})/, "$3-$2-$1")).getTime()
-											: 0;
-										const dateB = b.data.date?.value
-											? new Date(b.data.date.value.replace(/(\d{2})\.(\d{2})\.(\d{4})/, "$3-$2-$1")).getTime()
-											: 0;
+										const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+										const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
 										return dateB - dateA; // Descending: recent first
 									})
 									.map((expense) => (
-										<tr key={expense.id} className="border-b text-sm last:border-b-0 transition-colors">
-											<td className="py-3 px-4 flex flex-col gap-1">
+										<tr key={expense.id} className="border-b text-sm last:border-b-0 transition-colors hover:bg-indigo-200/50 cursor-pointer" onClick={() => router.push(`/dashboard/expenses/${expense._id}`)}>
+											<td className="py-3 px-4 flex flex-col gap-1 ">
 												<p className="font-medium text-indigo-700">{expense.data.company_name?.value}</p>
 												{expense.data.date?.value &&
 													new Date(

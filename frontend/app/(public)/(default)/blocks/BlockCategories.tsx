@@ -4,6 +4,7 @@ import { useAnimation, motion } from "framer-motion";
 import TicketLanding from "../components/TicketLanding";
 import { CATEGORIES, DEFAULT_RULES } from "../types/categories";
 import { FaCheck } from "react-icons/fa6";
+import { isMobile } from "@/lib/utils";
 
 
 export default function BlockLanding({rules, setRules}) {
@@ -15,7 +16,7 @@ export default function BlockLanding({rules, setRules}) {
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-5xl md:text-6xl font-black text-white mb-6 text-left"
+            className="text-5xl md:text-6xl font-black text-white mb-6 text-center md:text-left"
           >
             Gérer les catégories de dépenses
           </motion.h1>
@@ -23,13 +24,13 @@ export default function BlockLanding({rules, setRules}) {
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="text-lg md:text-2xl text-white/90 mb-10 text-left"
+            className="text-lg md:text-2xl text-white/90 mb-10 text-center md:text-left"
           >
             Organisez vos dépenses en catégories pour une gestion plus efficace et une meilleure visibilité des coûts.
           </motion.p>
 
           <motion.div 
-            className="flex flex-wrap gap-4 mt-6 w-[75%]"
+            className="hidden md:flex flex-wrap gap-4 mt-6 w-[75%]"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.5 }}
@@ -68,8 +69,9 @@ export default function BlockLanding({rules, setRules}) {
 
           </motion.div>
         </div>
-           <div className="flex-1 z-10 relative flex items-start justify-start">
-        </div>
+        { !isMobile() && (
+           <div className="flex-1 z-10 relative flex items-start justify-start"/>
+        )}
 
       </div>
   );

@@ -6,6 +6,7 @@ import BlockCategories from "./blocks/BlockCategories";
 import BlockPrices from "./blocks/BlockPrices";
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { isMobile } from "@/lib/utils";
 
 export default function Page() {
   const [rules, setRules] = useState(DEFAULT_RULES);
@@ -59,8 +60,10 @@ export default function Page() {
       <div ref={pricesRef}>
         <BlockPrices rules={rules} setRules={setRules} />
       </div>
+
+      { !isMobile () && (
       <motion.div
-        className="absolute right-[49vh]"
+        className="absolute right-[38vh] md:right-[49vh]"
         initial={false}
         animate={{
           top: typeof window !== "undefined" ? window.innerHeight * activeBlock : 0,
@@ -74,6 +77,7 @@ export default function Page() {
       >
         <TicketLanding rules={rules}/>
       </motion.div>
+      )}
       
     </div>
   );

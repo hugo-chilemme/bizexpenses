@@ -38,7 +38,9 @@ module.exports = (app, api) => {
         for (const method of Object.keys(configs))
         {
 
-            registerRoute(app, method, api + route, router[method], configs[method]);
+            const meth = method === 'delete' ? 'del' : method; // Normalize 'delete' to 'del'
+            
+            registerRoute(app, method, api + route, router[meth], configs[method]);
 
         }
 
@@ -48,7 +50,9 @@ module.exports = (app, api) => {
 function registerRoute(app, method, route, endpoint, config)
 {
     const middlewares = [];
+
     if (config.isAuthentified) {
+        console.log(route, method, config)
         middlewares.push(jwtAuth);
         if (Array.isArray(config._entreprise_roles)) {
             middlewares.push(requireRole(config._entreprise_roles));
@@ -57,7 +61,7 @@ function registerRoute(app, method, route, endpoint, config)
 
     app[method](route, ...middlewares, async (req, res) => {
         if (!config.isAuthentified)
-            console.warn(`Route ${route} is not authenticated, this is not recommended.`);
+            console.log(method.toUpperCase(), route, 'is not authenticated');
         return endpoint(req, res);
     });
 
@@ -125,7 +129,6 @@ async function jwtAuth(req, res, next) {
                 rules: entreprise.rules || {},
             };
         }
-
 
         next();
     } catch (err) {

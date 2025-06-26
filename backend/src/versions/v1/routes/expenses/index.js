@@ -10,7 +10,16 @@ const config = {
 	}
 };
 
-
+/**
+ * Retrieves a list of expenses for the authenticated user or by status.
+ * @async
+ * @param {import('express').Request} req - Express request object, expects `status` in query.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>} Sends a JSON response with the list of expenses or an error message.
+ * @description
+ * This function validates the provided status, checks if the user is authorized,
+ * retrieves the list of expenses from the database, and sends the response.
+ */
 const get = async (req, res) => {
 	const { status } = req.query;
 

@@ -11,8 +11,18 @@ const config = {
 		isAuthenticated: true,
 	}
 }
-
-
+/** * Retrieves the data of an expense by its ID.
+ * * @async
+ * * @function get
+ * * @param {import('express').Request} req - Express request object. Expects `expenseId` in params.
+ * * @param {import('express').Response} res - Express response object.
+ * * @returns {Promise<void>} Sends a JSON response with the expense data or an error message.
+ * * @description
+ * * - Validates that the `expenseId` is provided in the request parameters.
+ * * - Checks if the expense with the given ID exists in the database.
+ * * - Verifies that the user has permission to access the expense (must be the owner, or have 'owner' or 'hr' role).
+ * * - Returns the expense data if found, or appropriate HTTP status codes and messages for errors.
+ */
 const get = async (req, res) => {
 	// get data of an expense
 	const { expenseId } = req.params;
@@ -36,6 +46,22 @@ const get = async (req, res) => {
 	res.status(200).json({ status: 'success', data: expense });
 }
 
+/**
+ * Updates the data of an existing expense.
+ *
+ * @async
+ * @function post
+ * @param {import('express').Request} req - Express request object. Expects `expenseId` in params and `expense` in body.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>} Sends a JSON response with the status of the update operation.
+ *
+ * @description
+ * - Validates that the expense data is provided in the request body.
+ * - Checks if the expense with the given ID exists in the database.
+ * - Verifies that the user has permission to update the expense (must be the owner, or have 'owner' or 'hr' role).
+ * - Updates the expense data, sets the status to 'pending', and updates the `updatedAt` timestamp.
+ * - Returns appropriate HTTP status codes and messages for errors and success.
+ */
 const post = async (req, res) => {
 	// update data of an expense
 
@@ -66,6 +92,20 @@ const post = async (req, res) => {
 	res.status(200).json({ status: 'success', message: 'Expense updated successfully' });
 }
 
+/**
+ * Deletes an existing expense.
+ * @async
+ * @function del
+ * @param {import('express').Request} req - Express request object. Expects `expenseId` in params.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>} Sends a JSON response with the status of the deletion operation.
+ * @description 
+ * - Validates that the `expenseId` is provided in the request parameters.
+ * - Fetches the expense from the database to verify its existence and ownership.
+ * - Checks if the current user is the owner of the expense.	
+ * - Deletes the expense if it exists and the user has permission.
+ * - Returns appropriate HTTP status codes and messages for errors and success.
+ */
 const del = async (req, res) => {
 	console.log( req.user)
 	const { expenseId } = req.params;

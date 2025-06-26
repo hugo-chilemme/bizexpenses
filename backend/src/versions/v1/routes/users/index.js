@@ -16,6 +16,19 @@ const config = {
     }
 };
 
+/** * Retrieves the list of employees for the authenticated entreprise.
+ * @async
+ * @function get
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>} Sends a JSON response with the list of employees or an error message.
+ * @description 
+ * - Fetches the entreprise associated with the authenticated user.
+ * - Retrieves the list of users associated with the entreprise.
+ * - For each user, fetches additional details like first name, last name, email, and active status.
+ * - Returns the list of employees in the response.
+ * * If an error occurs during the process, it logs the error and returns a 500 status with an error message.
+ */
 const get = async (req, res) => {
     try {
         const entreprise = await database().collection('entreprises').findOne({ "uuid": req.user.entreprise.uuid });
@@ -40,7 +53,22 @@ const get = async (req, res) => {
     return res.status(200).json({ status: 'success', data: req.user });
 };
 
-
+/** * Creates a new user and sends an invitation email.
+ * @async
+ * @function post
+ * @param {import('express').Request} req - Express request object, expects user details in the body.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>} Sends a JSON response with the status of the user creation or an error message.
+ * @description
+ * - Validates the presence of required fields in the request body (firstName, lastName, email).
+ * - Checks if the entreprise associated with the authenticated user exists.    
+ * - Checks if a user with the provided email already exists.
+ * - Creates a new user with the provided details and a generated reset token.
+ * * - Sends an invitation email to the new user with a link to complete their registration.
+ * * - Adds the new user to the entreprise's user list.
+ * - Returns a 201 status with the created user data or a 404 status if the entreprise is not found.
+ * * - If an error occurs during the process, it logs the error and returns a 500 status with an error message.
+ */
 const post = async (req, res) => {
 
     const { firstName, lastName, email } = req.body;
@@ -84,6 +112,21 @@ const post = async (req, res) => {
     return res.status(201).json({ status: 'success', data: user });
 };
 
+
+/** * Deletes a user from the entreprise.
+ * @async
+ * @function delete
+ * @param {import('express').Request} req - Express request object, expects `userId` in query.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>} Sends a JSON response with the status of the deletion or an error message.
+ * @description
+ * - Validates the presence of the `userId` query parameter.
+ * - Checks if the user exists in the database.
+ * - Checks if the user is part of the entreprise associated with the authenticated user.   
+ * - If the user is found and part of the entreprise, removes the user from the entreprise's user list.
+ * - Returns a 200 status with a success message or a 404 status if the user is not found or not part of the entreprise.
+ * * - If an error occurs during the process, it logs the error and returns a 500 status with an error message.
+ */
 const del = async (req, res) => {
     const userId = req.query.userId;
     if (!userId) {

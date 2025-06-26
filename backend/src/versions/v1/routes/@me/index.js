@@ -9,11 +9,32 @@ const config = {
 	}
 }
 
+/** * Retrieves the authenticated user's data.
+ * @async
+ * @function get
+ * @param {import('express').Request} req - Express request object, expects user data in `req.user`.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>} Sends a JSON response with the user's data.
+ * @description
+ * - Validates that the user is authenticated.
+ * - Returns the user's data in the response.
+ */
 const get = async (req, res) => {
 
 	return res.send({status: 'success', data: req.user});
 };
 
+/** * Deletes the authenticated user after verifying the password.
+ * @async
+ * @function del
+ * @param {import('express').Request} req - Express request object, expects `password` in query.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>} Sends a JSON response with the status of the deletion or an error message.
+ * @description
+ * - Validates that the password is provided in the request query.
+ * - Checks if the user exists and verifies the password.
+ * - Deletes the user, their devices, expenses, and removes them from entreprises.
+ */
 const del = async (req, res) => {
 	const { password } = req.query;
 

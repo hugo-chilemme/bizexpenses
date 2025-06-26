@@ -37,8 +37,8 @@ const get = async (req, res) => {
 		if (req.user.entreprise.role === "user")
 			return res.status(403).json({ status: 'error', error: 'Forbidden' });
 		let items;
-		if (status === 'all') {
-			items = await database().collection('expenses').find({ userId: new ObjectId(req.user._id) }).toArray();
+		if (status === 'all' && req.user.entreprise.role !== "user") {
+			items = await database().collection('expenses').find({ status: { $in: ['pending', 'accepted', 'rejected'] } }).toArray();
 		} else {
 			items = await database().collection('expenses').find({ userId: new ObjectId(req.user._id), status }).toArray();
 		}
@@ -51,6 +51,7 @@ const get = async (req, res) => {
 	items = await addUserInfo(items);
 	res.status(200).json({ status: 'success', items });
 };
+
 
 module.exports = {
 	get,

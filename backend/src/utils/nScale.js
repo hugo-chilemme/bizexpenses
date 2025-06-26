@@ -5,7 +5,6 @@ const prompt = `Récupère toutes les informations pertinentes du ticket de cais
 - Nom de l'entreprise ou du commerçant
 - Adresse de l'entreprise (si présente)
 - Date et heure de l'achat
-- Numéro du ticket ou de la transaction (si présent)
 - Liste des articles achetés, avec pour chaque article :
 	- Nom ou description de l'article
 	- Quantité
@@ -43,7 +42,6 @@ Réponds uniquement au format JSON sans bloc de code, par exemple :
 	  "quantity": { "value": 2, "error": false },
 	  "unit_price": { "value": 1.20, "error": false },
 	  "total_price": { "value": 2.40, "error": false },
-	  "vat_rate": { "value": "5.5%", "error": false },
 	  "vat_amount": { "value": 0.13, "error": false },
 	  "category": { "value": "alimentation", "error": false }
 	},
@@ -52,7 +50,6 @@ Réponds uniquement au format JSON sans bloc de code, par exemple :
 	  "quantity": { "value": 1, "error": false },
 	  "unit_price": { "value": 0.90, "error": false },
 	  "total_price": { "value": 0.90, "error": false },
-	  "vat_rate": { "value": "5.5%", "error": false },
 	  "vat_amount": { "value": 0.05, "error": false },
 	  "category": { "value": "alimentation", "error": false }
 	}

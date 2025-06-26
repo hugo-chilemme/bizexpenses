@@ -33,12 +33,14 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
+import { useRouter } from "next/navigation";
 
 export default function SalaryDashboard() {
 	const [expenses, setExpenses] = useState([]);
 	const [selectedExpense, setSelectedExpense] = useState<any>(null);
 	const [open, setOpen] = useState(false);
 	const [image, setImage] = useState<string>("/images/placeholder.png");
+	const router = useRouter();
 
 	useEffect(() => {
 		const fetchExpenses = async () => {
@@ -151,17 +153,11 @@ export default function SalaryDashboard() {
 										key={expense.id}
 										className="border-b text-sm last:border-b-0 transition-colors cursor-pointer hover:bg-indigo-500/25 rounded-2xl"
 										onClick={() => {
-											setSelectedExpense(expense);
-											setOpen(true);
+											router.push(`/dashboard/expenses/${expense._id}`);
 										}}
 									>
 										<td className="py-3 px-4 flex flex-col gap-1">
 											<p className="font-medium text-indigo-700">{expense.data.company_name?.value}</p>
-											{ expense.status === "pending" && (
-												<span className="text-neutral-600 text-xs">Votre demande a été transmise à votre service des ressources humaines.</span>
-											)}
-										</td>
-										<td className="py-3 px-4 text-neutral-600">
 											{expense.data.date?.value &&
 												new Date(
 													expense.data.date.value.replace(/(\d{2})\.(\d{2})\.(\d{4})/, "$3-$2-$1")
@@ -171,6 +167,7 @@ export default function SalaryDashboard() {
 													year: "numeric",
 												})}
 										</td>
+										
 										<td className="py-3 px-4 text-neutral-800">
 											{expense.data.total_ttc?.value ? parseFloat(expense.data.total_ttc.value).toFixed(2) : "0.00"} €
 										</td>
@@ -221,7 +218,7 @@ export default function SalaryDashboard() {
 						<DrawerDescription>
 							{selectedExpense && (
 								<>
-								<div className="flex justify-between items-center mb-4 gap-8">
+								<div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-8 ">
 									{image && (
 										<Image src={image} alt="Reçu" className="mb-4 cursor-pointer rounded-lg h-[500px] w-[600px] object-contain" width={600} height={400} onClick={openImage}/>
 									)}

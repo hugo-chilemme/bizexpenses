@@ -1,118 +1,130 @@
 "use client";
 import React, { useState } from "react";
+import { useUser } from "@/components/context/User";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Input } from "@/components/ui/input";
+import ApiController from "@/lib/api-controller";
 
 const AccountSettingsPage = () => {
-	const [form, setForm] = useState({
-		name: "",
-		email: "",
-		password: "",
-	});
+	const { user } = useUser();
+	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
-	const [success, setSuccess] = useState(false);
-	const [error, setError] = useState<string | null>(null);
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setForm({ ...form, [e.target.name]: e.target.value });
-	};
 
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
+	async function handleDeleteAccount() {
+		if (password.length < 6) {
+			toast.error("Le mot de passe doit contenir au moins 6 caractères.");
+			return;
+		}
 		setLoading(true);
-		setError(null);
-		setSuccess(false);
-		// Simulate API call
-		setTimeout(() => {
-			setLoading(false);
-			setSuccess(true);
-		}, 1200);
-	};
+		const response: any = await ApiController("@me", "DELETE", {
+			password,
+		});
+		setLoading(false);	
+
+		if (response.status === "error") {
+			toast.error(response.error || "Une erreur est survenue.");
+			return;
+		}
+
+		toast.success("Votre compte a été supprimé avec succès.");
+		localStorage.removeItem("authorization");
+		localStorage.removeItem("uuid");
+		localStorage.removeItem("role");
+		window.location.href = "/"; // Rediriger vers la page d'accueil ou de connexion
+	}
 
 	return (
-		<div className="max-w-xl mx-auto py-10 px-4">
-			<h1 className="text-3xl font-bold mb-8">Paramètres du compte</h1>
-			<p className="mb-8 text-gray-600">
-				Gérez vos informations personnelles et la sécurité de votre compte.
-			</p>
-			<form className="space-y-6" onSubmit={handleSubmit} autoComplete="off">
-				<div>
-					<label className="block text-sm font-medium mb-1" htmlFor="name">
-						Nom complet
-					</label>
-					<input
-						id="name"
-						name="name"
-						type="text"
-						autoComplete="name"
-						className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-						placeholder="Votre nom"
-						value={form.name}
-						onChange={handleChange}
-					/>
-				</div>
-				<div>
-					<label className="block text-sm font-medium mb-1" htmlFor="email">
-						Adresse email
-					</label>
-					<input
-						id="email"
-						name="email"
-						type="email"
-						autoComplete="email"
-						className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-						placeholder="Votre email"
-						value={form.email}
-						onChange={handleChange}
-					/>
-					<p className="text-xs text-gray-500 mt-1">
-						Nous n'utiliserons jamais votre email à des fins commerciales.
-					</p>
-				</div>
-				<div>
-					<label className="block text-sm font-medium mb-1" htmlFor="password">
-						Nouveau mot de passe
-					</label>
-					<input
-						id="password"
-						name="password"
-						type="password"
-						autoComplete="new-password"
-						className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-						placeholder="Nouveau mot de passe"
-						value={form.password}
-						onChange={handleChange}
-					/>
-					<p className="text-xs text-gray-500 mt-1">
-						Laissez vide pour ne pas changer le mot de passe.
-					</p>
-				</div>
-				{error && (
-					<div className="text-red-600 text-sm">{error}</div>
-				)}
-				{success && (
-					<div className="text-green-600 text-sm">
-						Modifications enregistrées avec succès !
+		<div className="p-12 md:p-24">
+			<h1 className="text-2xl font-bold mb-6">Paramètres du compte</h1>
+
+			<div className="mt-6 bg-white rounded-xl shadow-md border p-8">
+				<h3>Mes informations</h3>
+				<div className="mt-8 flex justify-between items-center gap-4">
+					<div className="flex flex-col gap-2 flex-1">
+						<label className="text-xs">Prénom</label>
+						<input
+							type="text"
+							name="firstName"
+							disabled
+							value={user.firstName}
+							className="border rounded-md p-2 w-full text-sm bg-gray-100 cursor-not-allowed"
+							placeholder="Prénom"
+						/>
 					</div>
-				)}
-				<button
-					type="submit"
-					disabled={loading}
-					className={`bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition ${
-						loading ? "opacity-60 cursor-not-allowed" : ""
-					}`}
-				>
-					{loading ? "Enregistrement..." : "Enregistrer les modifications"}
-				</button>
-			</form>
-			<div className="mt-10 border-t pt-8">
-				<h2 className="text-lg font-semibold mb-2">Sécurité du compte</h2>
-				<ul className="text-sm text-gray-600 space-y-1">
-					<li>
-						<strong>Dernière connexion :</strong> il y a 2 jours
-					</li>
-					<li>
-						<strong>Authentification à deux facteurs :</strong> <span className="text-green-600">Activée</span>
-					</li>
-				</ul>
+					<div className="flex flex-col gap-2 flex-1">
+						<label className="text-xs">Nom</label>
+						<input
+							type="text"
+							name="lastName"
+							disabled
+							value={user.lastName}
+							className="border rounded-md p-2 w-full text-sm bg-gray-100 cursor-not-allowed"
+							placeholder="Nom"
+						/>
+					</div>
+				</div>
+				<div className="flex-1">
+					<div className="mt-4 flex flex-col gap-2">
+						<label className="text-xs">Email</label>
+						<input
+							type="email"
+							name="email"
+							disabled
+							value={user.email}
+							className="border rounded-md p-2 w-full text-sm bg-gray-100 cursor-not-allowed"
+							placeholder="Email"
+						/>
+					</div>
+				</div>
+				<p className="text-xs text-gray-500 mt-8">
+					Vous ne pouvez pas modifier vos informations personnelles, car elles ont été définies par votre entreprise. Si vous avez besoin de les modifier, veuillez contacter votre administrateur.
+				</p>
+			</div>
+
+			<div className="mt-6 bg-white rounded-xl shadow-md border p-8">
+				<h3 className="mb-8">Supprimer mon compte</h3>
+				<p className="text-sm text-gray-500 mb-4">
+					Attention, cette action est irréversible. Si vous supprimez votre compte, toutes vos données seront perdues.<br/>
+					Vous devrez contacter votre administrateur pour réactiver votre compte si vous changez d'avis.
+				</p>
+				<AlertDialog>
+					<AlertDialogTrigger className="bg-red-500 border border-red-500 text-sm text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors">
+						Supprimer mon compte
+					</AlertDialogTrigger>
+					<AlertDialogContent>
+						<AlertDialogHeader>
+							<AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
+							<AlertDialogDescription>
+								Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.
+
+								<Input type="password" placeholder="Entrez votre mot de passe pour confirmer" className="mt-4" value={password} onChange={(e) => setPassword(e.target.value)} disabled={loading} />
+								<br />
+								En supprimant votre compte, vous perdrez toutes vos données et ne pourrez plus accéder à votre compte. Si vous changez d'avis, vous devrez contacter votre administrateur pour recréer votre compte.
+							</AlertDialogDescription>
+						</AlertDialogHeader>
+						<AlertDialogFooter>
+							<AlertDialogCancel>Annuler</AlertDialogCancel>
+							<AlertDialogAction className="bg-red-500 text-white hover:bg-red-600 transition-colors" disabled={password.length < 6 || loading} onClick={handleDeleteAccount}>
+								{loading ? <Loader2 className="animate-spin" /> : "Supprimer"}
+							</AlertDialogAction>
+						</AlertDialogFooter>
+					</AlertDialogContent>
+				</AlertDialog>
+				
 			</div>
 		</div>
 	);

@@ -45,6 +45,17 @@ const post = async (req, res) => {
 	if (!expense) {
 		return res.status(400).json({ status: 'error', error: 'Data is required' });
 	}
+
+	const expenseData = await database().collection('expenses').findOne({ _id: new ObjectId(expenseId) });
+
+	if (!expenseData) {
+		return res.status(404).json({ status: 'error', error: 'Expense not found' });
+	}
+
+	if (expenseData.userId.toString() !== req.user._id.toString() && req.user.entreprise.role !== 'owner' && req.user.entreprise.role !== 'hr') {
+		return res.status(403).json({ status: 'error', error: 'Forbidden' });
+	}
+
 	const result = await database().collection('expenses').updateOne(
 		{ _id: new ObjectId(expenseId) },
 		{ $set: { data: expense, updatedAt: new Date(), status: 'pending' } }

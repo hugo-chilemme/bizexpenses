@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { IoChevronUp } from "react-icons/io5";
 import { CATEGORIES, DEFAULT_RULES, FAKE_PRODUCTS_BY_CATEGORY } from "../types/categories";
 import { NumberTicker } from "@/components/magicui/number-ticker";
-
+import { isMobile } from "@/lib/utils";
 
 
 
@@ -84,7 +84,7 @@ export default function AnimatedTicket({
 	return (
 		<motion.div
 			initial={{ y: 120, x: -60, scale: 0.5, opacity: 0, rotate: -8 }}
-			animate={{ y: 0, x: 0, opacity: 1, rotate: rotation, scale: 1.23 }}
+			animate={{ y: 0, x: 0, opacity: 1, rotate: rotation, scale: isMobile() ? 1.0 : 1.23 }}
 			exit={{ opacity: 0 }}
 			transition={framer({
 				duration: 1.5,
@@ -92,7 +92,7 @@ export default function AnimatedTicket({
 				type: "spring",
 				stiffness: 100,
 			})}
-			className={`absolute top-[50vh] rotate-12 origin-center`}
+			className={`absolute top-[75vh] md:left-auto md:top-[50vh] md:rotate-12 origin-center`}
 			style={{
 				width: 270,
 				height: 330,

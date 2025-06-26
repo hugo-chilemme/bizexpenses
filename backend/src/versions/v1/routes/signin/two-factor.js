@@ -11,6 +11,17 @@ const config = {
 	}
 }
 
+/** * Handles device trust confirmation via UUID, deviceId, and token.
+ * @async
+ * @function post
+ * @param {import('express').Request} req - Express request object, expects `uuid`, `deviceId`, and `token` in body.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>} Sends a JSON response with the status of the trust confirmation or an error message.
+ * @description
+ * - Validates the presence and types of required fields in the request body.
+ * - Checks if the device exists in the database.
+ * - Updates the device record to set it as trusted.
+ */
 const post = async (req, res) => {
 	const { uuid, deviceId, token } = req.body;
 
@@ -45,7 +56,17 @@ const post = async (req, res) => {
 	return res.status(200).json({ status: 'success', message: 'Device trusted successfully' });
 };
 
-
+/** * Handles device trust confirmation via a random token.
+ * @async
+ * @function put
+ * @param {import('express').Request} req - Express request object, expects `token` in query.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>} Sends a JSON response with the status of the trust confirmation or an error message.
+ * @description
+ * - Validates the presence of the `token` query parameter.
+ * - Checks if the device exists in the database.
+ * - Updates the device record to set it as trusted.
+ */
 const put = async (req, res) => {
 	const { token } = req.query;
 

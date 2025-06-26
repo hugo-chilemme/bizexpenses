@@ -10,8 +10,7 @@ const config = {
 }
 
 
-
-const post = (req, res) => {
+const post = async (req, res) => {
   const image = req.body.base64;
   if (!image) {
     return res.status(400).json({ status: 'error', error: 'Image is required' });
@@ -29,30 +28,49 @@ const post = (req, res) => {
   const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
   const buffer = Buffer.from(base64Data, 'base64');
 
-  fs.writeFile(filePath, buffer, (err) => {
+  fs.writeFile(filePath, buffer, async (err) => {
     if (err) {
       return res.status(500).json({ status: 'error', error: 'Failed to save image' });
     }
-    nScale.analyzeImage(image).then((data) => {
-      database().collection('expenses').insertOne({
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        status: 'preparing',
-        image: `${id}.png`,
-        data: data,
-        userId: req.user._id,
-      }).then((result) => {
-        console.log(`Expense ${id} created`);
-        res.status(200).json({ status: 'success', data, file: `${id}.png`, rowId: result.insertedId });
-      }).catch((error) => {
-        console.error(`Failed to create expense ${id}:`, error);
-        return res.status(500).json({ status: 'error', error: 'Failed to create expense' });
-      });
-    }).catch((error) => {
-      res.status(500).json({ status: 'error', error: error.message });
+
+    // create database row 
+    const row = await database().collection('expenses').insertOne({
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'preparing',
+      image: `${id}.png`,
+      data: {},
+      userId: req.user._id,
     });
+
+
+
+    // Réponse immédiate
+    res.status(200).json({ status: 'success', id: row.insertedId });
+
+    // Analyse et insertion en base en arrière-plan
+    nScale.analyzeImage(image)
+      .then((data) => {
+        return database().collection('expenses').updateOne(
+          { _id: row.insertedId },
+          {
+            $set: {
+              status: 'processed',
+              data: data,
+              updatedAt: new Date(),
+            },
+          }
+        );
+      })
+      .then((result) => {
+        console.log(`Expense ${id} created`);
+      })
+      .catch((error) => {
+        console.error(`Failed to process expense ${id}:`, error);
+      });
   });
 }
+
 
 module.exports = {
   post,

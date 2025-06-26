@@ -24,9 +24,9 @@ export default function Header() {
 	return (
 		<header className="fixed top-0 h-32 container text-sm mx-auto left-0 right-0 flex items-center justify-between px-4 z-50">
 			<div>
-				<Link href="/" className="text-3xl font-semibold text-white flex items-center gap-6">
+				<Link href="/" className="text-xl md:text-3xl font-semibold text-white flex items-center gap-6">
 					<AnimatedLogo width={6} />
-					BizExpenses
+					<span className="hidden md:inline">BizExpenses</span>
 				</Link>
 			</div>
 			<div className="flex items-center gap-4">

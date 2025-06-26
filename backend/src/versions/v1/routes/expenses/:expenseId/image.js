@@ -9,6 +9,21 @@ const config = {
 	}
 };
 
+/**
+ * Handles GET requests to retrieve the image associated with a specific expense.
+ *
+ * @async
+ * @function get
+ * @param {Object} req - Express request object, containing parameters and authenticated user.
+ * @param {Object} req.params - Route parameters.
+ * @param {string} req.params.expenseId - The ID of the expense to retrieve the image for.
+ * @param {Object} req.user - The authenticated user object.
+ * @param {Object} req.user._id - The ID of the authenticated user.
+ * @param {Object} req.user.entreprise - The entreprise object of the user.
+ * @param {string} req.user.entreprise.role - The role of the user in the entreprise.
+ * @param {Object} res - Express response object, used to send the response.
+ * @returns {Promise<void>} Sends a JSON response containing the image in base64 format, or an error message.
+ */
 const get = async (req, res) => {
 	const { expenseId } = req.params;
 

@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { FaTachometerAlt, FaCog, FaUtensils, FaUsers, FaGavel } from "react-icons/fa";
-
+import { motion } from "framer-motion";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -32,7 +32,6 @@ function RenderLink({ href, icon, label, onClick }: RenderLinkProps) {
 	const pathname = usePathname();
 	const active = (pathname === "/dashboard" && href === "/")  || pathname.endsWith(href);
 	
-	console.log("Active link:", active, "Current path:", pathname, "Link href:", href);
 
 
 	return (
@@ -62,6 +61,7 @@ export default function Layout({
 	children: React.ReactNode;
 }>) {
 	const router = useRouter();
+	const pathname = usePathname();
 	const { user, logout } = useUser();
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 	if (!user) {
@@ -224,23 +224,36 @@ export default function Layout({
 			</nav>
 
 			{/* Desktop Sidebar */}
-			<aside className="fixed top-0 hidden md:flex w-96 text-white h-screen py-6 flex-col justify-start items-start pr-6">
+			<motion.aside className="fixed top-0 hidden md:flex w-96 text-white h-screen py-6 flex-col justify-start items-start pr-6" 
+				initial={{ x: 0 }}
+				animate={{ x: pathname.includes("/expenses/") ? "-100%" : 0 }}
+				exit={{ x: "-100%" }}
+				transition={{ type: "spring", stiffness: 300, damping: 30 }}
+			>
 				<div className="flex items-center w-full justify-center gap-4 px-6">
 					<AnimatedLogo />
 				</div>
 				<div className="px-6 my-12 mr-6 flex flex-1 flex-col gap-4 w-full">
-					<Link href="/dashboard/expenses/new" className="font-medium bg-indigo-500 p-3 text-white rounded-2xl flex items-center justify-center mb-6 hover:bg-indigo-600 transition-colors">
-						Soumettre mes notes de frais
-					</Link>
+					{ user.entreprise.role === "user" && (
+						<Link href="/dashboard/expenses/new" className="font-medium bg-indigo-500 p-3 text-white rounded-2xl flex items-center justify-center mb-6 hover:bg-indigo-600 transition-colors">
+							Soumettre mes notes de frais
+						</Link>
+					)}
 					{user.entreprise.role === "user" && navSalary}
 					{user.entreprise.role === "hr" && navLinks}
 					{user.entreprise.role === "owner" && navAdmin}
 				</div>
 				{userMenu}
-			</aside>
+			</motion.aside>
 
 			{/* Main Content */}
-			<div className="w-96 hidden md:flex" />
+			<motion.div className="w-96 hidden md:flex"
+				initial={{ width:"24rem" }}
+				animate={{ width: pathname.includes("/expenses/") ? 0 : "24rem" }}
+				exit={{ width: 0 }}
+				transition={{ type: "spring", stiffness: 300, damping: 30 }}
+			
+			/>
 			<div className="flex-1 bg-blue-100/50 rounded-2xl p-2 md:p-0">{children}</div>
 		</main>
 	);

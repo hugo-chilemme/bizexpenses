@@ -12,6 +12,16 @@ const config = {
 	put: {}
 };
 
+/** * Handles user registration by validating input, creating a new user and entreprise, and sending confirmation emails.
+ * @async
+ * @function post
+ * @param {import('express').Request} req - Express request object, expects user details in the body.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>} Sends a JSON response with the status of the registration or an error message.
+ * @description
+ * - Validates the presence and types of required fields in the request body.
+ * - Checks if the user already exists in the database.
+ */
 const post = async (req, res) => {
 	const { firstName, lastName, email, companyName, companySize, password } = req.body;
 
@@ -124,7 +134,17 @@ const post = async (req, res) => {
 	}
 };
 
-
+/** * Retrieves user information based on the reset token.
+ * @async
+ * @function get
+ * @param {import('express').Request} req - Express request object, expects `resettoken` in query.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>} Sends a JSON response with the user information or an error message.
+ * @description
+ * - Validates the presence of the `resettoken` query parameter.
+ * - Checks if a user with the provided reset token exists in the database.
+ * - Returns the user's ID and first name if found, or appropriate HTTP status codes and messages for errors.
+ */
 const get = async (req, res) => {
 	// check if the user can register 
 	const { resettoken } = req.query;
@@ -147,7 +167,18 @@ const get = async (req, res) => {
 	});
 };
 
-
+/** * Updates the user's password based on the reset token.
+ * @async
+ * @function put
+ * @param {import('express').Request} req - Express request object, expects `resettoken` and `password` in query.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>} Sends a JSON response with the status of the password update or an error message.
+ * @description	
+ * - Validates the presence of the `resettoken` and `password` query parameters.
+ * - Checks if the user with the provided reset token exists in the database.
+ * - Hashes the new password and updates the user's record in the database.
+ * - Returns appropriate HTTP status codes and messages for errors and success.
+ */
 const put = async (req, res) => {
 	// receive password
 	const { resettoken, password } = req.query;

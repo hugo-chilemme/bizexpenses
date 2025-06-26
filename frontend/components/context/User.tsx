@@ -41,8 +41,8 @@ export const UserProvider = ({ children }: UserProviderProps) => {
 				return setLoading(false);
 			}
 
-                        const response = await ApiController("@me", "GET");
-			if (response.status === "success") {
+			const response = await ApiController("@me", "GET");
+			if (response?.status === "success") {
 				console.log("User data fetched successfully:", response.data);
 				setUser(response.data);
 			}

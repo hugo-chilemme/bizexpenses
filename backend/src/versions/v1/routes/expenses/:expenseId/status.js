@@ -6,7 +6,45 @@ const config = {
 	put: {
 		isAuthenticated: true,
 		_entreprise_roles: ['owner', 'hr'],
+	},
+	get: {
+		isAuthenticated: true,
 	}
+}
+
+
+const get = async (req, res) => {
+	const { expenseId } = req.params;
+	if (!expenseId) {
+		return res.status(400).json({ status: 'error', error: 'Expense ID is required' });
+	}
+
+	const expense = await database().collection('expenses').findOne({ _id: new ObjectId(expenseId) });
+	if (!expense) {
+		return res.status(404).json({ status: 'error', error: 'Expense not found' });
+	}
+	const userExpense = await database().collection('users').findOne({ _id: new ObjectId(expense.userId) });	
+	if (!userExpense) {
+		return res.status(404).json({ status: 'error', error: 'User not found' });
+	}
+
+	res.status(200).json({
+		status: 'success',
+		data: {
+			id: expense._id,
+			status: expense.status,
+			createdAt: expense.createdAt,
+			updatedAt: expense.updatedAt,	
+			image: expense.image,
+			data: expense.data,
+			user: {
+				id: userExpense._id,
+				name: userExpense.name,
+				email: userExpense.email,
+				company: userExpense.company,
+			}
+		}
+	});
 }
 
 
@@ -60,5 +98,6 @@ Thank you for using our service.`
 
 module.exports = {
 	put,
+	get,
 	config
 };

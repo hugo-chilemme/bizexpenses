@@ -24,7 +24,7 @@ export default function Create({params}: Readonly<{
 
 	useEffect(() => {
 
-
+		let interval;
 		const verifyTwoFactor = async () => {
 			const response: any = await ApiController("signin/two-factor", "POST", {
 				uuid: uuid || params.uuid,
@@ -37,13 +37,13 @@ export default function Create({params}: Readonly<{
 			if (response.status === "success") {
 				toast.success("Identité vérifiée avec succès !");
 				router.push(`/dashboard`);
-			} else {
-			}
+				clearInterval(interval); 
+			} 
 		};
 
 		verifyTwoFactor();
 
-		const interval = setInterval(() => {
+		interval = setInterval(() => {
 			verifyTwoFactor();
 		}, 5000); // Vérification toutes les 5 secondes
 	}, [params.uuid, router]);

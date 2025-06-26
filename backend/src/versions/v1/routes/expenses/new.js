@@ -9,7 +9,16 @@ const config = {
 	}
 }
 
-
+/** * Handles POST requests to create a new expense by saving an image and processing it.
+ *
+ * @async
+ * @function post
+ * @param {Object} req - Express request object, containing the base64 image in the body.
+ * @param {Object} req.body - The request body containing the base64 image.
+ * @param {string} req.body.base64 - The base64 encoded image string.
+ * @param {Object} res - Express response object, used to send the response.
+ * @returns {Promise<void>} Sends a JSON response with the status of the operation or an error message.
+ */
 const post = async (req, res) => {
   const image = req.body.base64;
   if (!image) {

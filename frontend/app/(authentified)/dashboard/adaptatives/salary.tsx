@@ -10,9 +10,11 @@ import { useEffect, useState } from "react";
 import { FaRegBuilding } from "react-icons/fa";
 import { MdOutlineFileUpload } from "react-icons/md";
 import { TfiTicket } from "react-icons/tfi";
+import { useRouter } from "next/navigation";
 
 export default function SalaryDashboard() {
 
+	const router = useRouter();
 	const [expenses, setExpenses] = useState([]);
 
 	useEffect(() => {
@@ -52,7 +54,7 @@ export default function SalaryDashboard() {
 					
 				</div>
 			</div> */}
-			<div className="flex items-center gap-4 w-full mt-12">
+			<div className="flex flex-col md:flex-row items-start md:items-center gap-4 w-full mt-12">
 				<div className="flex-1 flex flex-col gap-4 max-w-md bg-indigo-100/50 p-6 rounded-2xl">
 					<FaRegBuilding className="w-8 h-8 text-indigo-600" />
 					<h2 className="text-lg text-indigo-600 font-semibold">{user.entreprise.name}</h2>
@@ -71,7 +73,7 @@ export default function SalaryDashboard() {
 					)}
 					<p className="text-neutral-700 text-balance">Passez ce délai, vos notes de frais seront envoyées le mois suivant.</p>
 				</div>
-				<div className="flex-1 flex flex-col gap-4 max-w-md bg-indigo-100/50 p-6 rounded-2xl">
+				<div className="flex-1 flex flex-col w-full gap-4 max-w-md bg-indigo-100/50 p-6 rounded-2xl">
 					<TfiTicket className="w-8 h-8 text-indigo-600" />
 					<h2 className="text-lg text-indigo-600 font-semibold">Soumettez vos notes de frais</h2>
 					<Link href="/dashboard/expenses/new" className="text-white p-2 rounded-lg flex items-center justify-center gap-2 bg-indigo-500 text-center font-semibold hover:bg-indigo-600 transition-colors">
@@ -88,39 +90,29 @@ export default function SalaryDashboard() {
 					</Link>
 				</div>
 				<div className="w-full overflow-x-auto">
-					<table className="min-w-full bg-indigo-200/15 rounded-2xl">
+					<table className="min-w-full bg-indigo-200/15 rounded-2xl overflow-hidden">
 		
 						<tbody>
 							{expenses.length > 0 ? (
 								expenses
 									.slice()
 									.sort((a, b) => {
-										const dateA = a.data.date?.value
-											? new Date(a.data.date.value.replace(/(\d{2})\.(\d{2})\.(\d{4})/, "$3-$2-$1")).getTime()
-											: 0;
-										const dateB = b.data.date?.value
-											? new Date(b.data.date.value.replace(/(\d{2})\.(\d{2})\.(\d{4})/, "$3-$2-$1")).getTime()
-											: 0;
+										const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+										const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
 										return dateB - dateA; // Descending: recent first
 									})
 									.map((expense) => (
-										<tr key={expense.id} className="border-b text-sm last:border-b-0 transition-colors">
+										<tr key={expense.id} className="border-b text-sm last:border-b-0 transition-colors hover:bg-indigo-200/50 cursor-pointer" onClick={() => router.push(`/dashboard/expenses/${expense._id}`)}>
 											<td className="py-3 px-4 flex flex-col gap-1">
 												<p className="font-medium text-indigo-700">{expense.data.company_name?.value}</p>
-												{ expense.status === "pending" && (
-													<span className="text-neutral-600 text-xs">Votre demande a été transmise à votre service des ressources humaines.</span>
-												)}
-											</td>
-											<td className="py-3 px-4 text-neutral-600">
-												{expense.data.date?.value &&
-													new Date(
-														expense.data.date.value.replace(/(\d{2})\.(\d{2})\.(\d{4})/, "$3-$2-$1")
-													).toLocaleDateString("fr-FR", {
+												{expense.createdAt &&
+													new Date(expense.createdAt).toLocaleDateString("fr-FR", {
 														day: "numeric",
 														month: "long",
 														year: "numeric",
 													})}
 											</td>
+										
 											<td className="py-3 px-4 text-neutral-800">
 												{expense.data.total_ttc?.value ? parseFloat(expense.data.total_ttc.value).toFixed(2) : "0.00"} €
 											</td>
@@ -142,6 +134,13 @@ export default function SalaryDashboard() {
 														<span className="bg-red-100/50 text-red-700 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
 															<svg className="w-3 h-3 fill-red-400" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" /></svg>
 															Rejeté
+														</span>
+													)}
+
+													{expense.status === "processed" && (
+														<span className="bg-blue-100/50 text-blue-700 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+															<svg className="w-3 h-3 fill-blue-400" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" /></svg>
+															Brouillon
 														</span>
 													)}
 													{!expense.status && (

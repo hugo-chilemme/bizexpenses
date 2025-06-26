@@ -1,20 +1,58 @@
 "use client";
 import { useState, useRef } from "react";
-import AnimatedLogo from "@/components/AnimatedLogo";
-import TypeWriter from "@/components/animations/TypeWriter";
 import { AiOutlineCloudUpload } from "react-icons/ai";
+import { IoCameraOutline } from "react-icons/io5";
+import { FaCircleCheck } from "react-icons/fa6";
+import { Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import ApiController from "@/lib/api-controller";
 import { toast } from "sonner";
-import { IoCameraOutline } from "react-icons/io5";
 import { useUser } from "@/components/context/User";
+import { cn } from "@/lib/utils";
+import { Button} from "@/components/ui/button";
+import ApiController from "@/lib/api-controller";
+import { IoIosInformationCircle } from "react-icons/io";
+import { Input } from "@/components/ui/input";
+import { CATEGORIES } from "@/types/categories";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
-type ExpenseAnalysis = any; // Remplacer par le vrai type
+/*
+example of expenseData data;
+  "company_name": { "value": "Hiboutik", "error": false },
+  "company_address": { "value": "30 place du Centre - 01214 MAYTILLe", "error": false },
+  "date": { "value": "2020-02-03", "error": false },
+  "transaction_number": { "value": "", "error": true },
+  "items": [
+    {
+      "name": { "value": "Croisine", "error": false },
+      "quantity": { "value": 1, "error": false },
+      "unit_price": { "value": 52.00, "error": false },
+      "total_price": { "value": 52.00, "error": false },
+      "vat_rate": { "value": "20%", "error": false },
+      "vat_amount": { "value": 8.67, "error": false },
+      "category": { "value": "Autres", "error": false }
+    }
+  ],
+  "total_ht": { "value": "", "error": true },
+  "total_vat": { "value": 8.67, "error": false },
+  "total_ttc": { "value": 52.00, "error": false },
+  "payment_method": { "value": "", "error": true }
+}
 
-const isMobile = typeof window !== "undefined" && /Mobi|Android/i.test(navigator.userAgent);
+
+
+*/
+const isMobile =
+	typeof window !== "undefined" && /Mobi|Android/i.test(navigator.userAgent);
 
 const FIELDS = [
 	{ key: "company_name", label: "Nom de l'entreprise", type: "text", placeholder: "Nom de l'entreprise" },
@@ -26,146 +64,200 @@ const FIELDS = [
 
 export default function Page() {
 	const router = useRouter();
-	const [step, setStep] = useState<"upload" | "processing" | "form" | "review" | "saving">("upload");
-	const [expense, setExpense] = useState<any>(null);
+	const [step, setStep] = useState<"upload-form" | "upload" | "processing" | "form">("upload-form");
 	const fileInputRef = useRef<HTMLInputElement>(null);
-	const { user } = useUser(); // Assurez-vous que le hook useUser est correctement importé
+	const [expense, setExpense] = useState<any>(null);
+	const [expenseData, setExpenseData] = useState<any>({});
+	const [imagePreview, setImagePreview] = useState<string | null>(null);
+	const [file, setFile] = useState<File | null>(null);
+	const { user } = useUser();
+	const [loading, setLoading] = useState<boolean>(false);
 
-	// UX: Reset everything
-	const reset = () => {
-		setExpense(null);
-		setStep("upload");
+	const [showPreview, setShowPreview] = useState<boolean>(false);
+
+	const [companyName, setCompanyName] = useState<string>("");
+	const [companyAddress, setCompanyAddress] = useState<string>("");
+	const [date, setDate] = useState<string>("");
+	const [totalTTC, setTotalTTC] = useState<string>("");
+	const [totalVAT, setTotalVAT] = useState<string>("");
+	const [paymentMethod, setPaymentMethod] = useState<string>("");
+
+
+	const reset = async () => {
+		if (expense.id)
+		{
+			ApiController(`expenses/${expense.id}`, 'DELETE');
+		}
+
+
+		setImagePreview(null);
+		setFile(null);
+		setStep("upload-form");
 	};
 
-	// UX: Upload file
 	const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (!e.target.files?.length) return;
-		const file = e.target.files[0];
-		setStep("processing");
+		const selectedFile = e.target.files?.[0];
+		if (!selectedFile) return;
+		handleUploadFile(selectedFile);
+	};
 
-		
-		// create blob URL and base64 for preview
-		if (!file.type.match(/image|pdf/)) {
+	const handleUploadFile = async (selectedFile: File) => {
+		if (!selectedFile.type.match(/image|pdf/)) {
 			toast.error("Veuillez téléverser un fichier image (jpg, jpeg, png) ou PDF.");
 			reset();
 			return;
 		}
-		const blobUrl = URL.createObjectURL(file);
-		setExpense({ file, blobUrl, base64: null, loading: true, analysis: null });
-
-
-		const reader = new FileReader();
-		reader.onload = async () => {
-			const base64 = reader.result as string;
-			const blobUrl = URL.createObjectURL(file);
-			setExpense({ file, blobUrl, base64, loading: true, analysis: null });
-
-			toast.info("Analyse de votre note de frais en cours...");
-
-			const response: any = await ApiController("expenses/new", "POST", { base64 });
-
-			if (!response || response.status === "error") {
-				toast.error("Erreur lors de l'envoi du fichier. Veuillez réessayer.");
-				reset();
-				return;
-			}
-
-			if (response.data.status === "error") {
-				toast.error(response.data.error || "Erreur lors de l'analyse du fichier.");
-				reset();
-				return;
-			}
-
-
-			setExpense((prev: any) => ({
-				...prev,
-				rowId: response.rowId,
-				analysis: response.data,
-				loading: false,
-			}));
-			setStep("form");
-		};
-		reader.onerror = () => reset();
-		reader.readAsDataURL(file);
-	};
-
-	// UX: Field change
-	const handleFieldChange = (key: string, value: string) => {
-		setExpense((prev: any) => ({
-			...prev,
-			analysis: {
-				...prev.analysis,
-				[key]: { ...prev.analysis?.[key], value, error: !value }
-			}
-		}));
-	};
-
-	// UX: Items change
-	const handleItemChange = (idx: number, field: string, value: string | number) => {
-		setExpense((prev: any) => ({
-			...prev,
-			analysis: {
-				...prev.analysis,
-				items: prev.analysis.items.map((it: any, i: number) =>
-					i === idx ? { ...it, [field]: { ...it[field], value, error: !value } } : it
-				)
-			}
-		}));
-	};
-
-	// UX: Validate fields
-	const isFormValid = () =>
-		FIELDS.every(f => {
-			const v = expense.analysis?.[f.key]?.value;
-			return v && (f.type !== "date" || !isNaN(new Date(v).getTime()));
+		const blobUrl = URL.createObjectURL(selectedFile);
+		const base64 = await new Promise<string>((resolve, reject) => {
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				if (typeof reader.result === "string") {
+					resolve(reader.result);
+				} else {
+					reject(new Error("Failed to read file"));
+				}
+			};
+			reader.readAsDataURL(selectedFile);
 		});
 
-	// UX: Save
-	const handleSave = async () => {
-		if (!isFormValid()) {
-			alert("Veuillez remplir tous les champs requis.");
+
+		selectedFile.blobUrl = blobUrl;
+		selectedFile.base64 = base64;
+
+		setImagePreview(blobUrl);
+		setFile(selectedFile);
+		setStep("upload");
+		await new Promise((r) => setTimeout(r, 1000));
+
+		setStep("processing");
+
+
+		
+
+		const response: any = await ApiController('expenses/new', 'POST', {
+			base64: base64
+		});
+
+		if (response.status === "error") {
+			toast.error(response.error || "Une erreur est survenue lors de l'envoi de la note de frais.");
+			reset();
 			return;
 		}
-		setStep("saving");
-		try {
 
-			const response: any = await ApiController(`expenses/${expense.rowId}`, "POST", {
-				expense: expense.analysis,
-			});
+		const id = response.id;
+		history.pushState({}, '', `/dashboard/expenses/${id}`);
 
-			if (response.status === "success") {
-				router.push("/dashboard");
-			} else {
-				alert("Erreur lors de l'enregistrement.");
-				setStep("review");
+		toast.info(id);
+
+		const interval = setInterval(async () => {
+			const statusResponse: any = await ApiController(`expenses/${id}/status`, 'GET');
+			if (statusResponse.status === "error") {
+				toast.error(statusResponse.error || "Une erreur est survenue lors de la récupération du statut.");
+				clearInterval(interval);
+				reset();
+				return;
 			}
-		} catch (error) {
-			console.error("Network error:", error);
-			alert("Erreur réseau.");
-			setStep("review");
-		}
+
+			if (statusResponse.data.status !== "processed") {
+				return;
+			}
+			clearInterval(interval);
+
+			setStep("preform");
+
+			setTimeout(async () => {
+				setStep("form");
+				setExpense(statusResponse.data);
+				setExpenseData(statusResponse.data.data);
+			}, 1000);
+
+
+		}, 2000);
+
+
 	};
 
-	const rules = user.entreprise?.rules;
+	const handleCameraClick = () => {
+		const cameraInput = document.createElement("input");
+		cameraInput.type = "file";
+		cameraInput.accept = "image/*";
+		(cameraInput as any).capture = "environment";
+		cameraInput.onchange = (e: Event) => {
+			handleFileChange(e as unknown as React.ChangeEvent<HTMLInputElement>);
+			setTimeout(() => cameraInput.remove(), 1000);
+		};
+		cameraInput.style.display = "none";
+		document.body.appendChild(cameraInput);
+		cameraInput.click();
+	};
 
-	// --- UI ---
+
+	// detecter le changement de HT et TVA et recalculer le TTC
+	const recalculateTTC = () => {
+		setExpenseData((prev: any) => {
+			const newTotalHT = prev.total_ht.value;
+			const newTotalTVA = prev.total_vat.value;
+			const newTotalTTC = parseFloat(newTotalHT) + parseFloat(newTotalTVA);
+			return {
+				...prev,
+				total_ttc: { ...prev.total_ttc, value: newTotalTTC, error: false },
+			};
+		});
+	};
+
+	const handleSubmit = async () => {
+		if (!expenseData) return;
+		setLoading(true);
+		const response = await ApiController(`expenses/${expense.id}`, 'POST', {
+			expense: expenseData,
+		});
+
+		await new Promise((r) => setTimeout(r, 2000));
+
+		setLoading(false);
+		if (response.status === "error") {
+			toast.error(response.error || "Une erreur est survenue lors de la création de la note de frais.");
+			return;
+		}
+
+		expense.status = "pending";
+		setExpenseData((prev: any) => ({
+			...prev,
+			status: "pending",
+		}));
+
+		router.push(`/dashboard/expenses/${expense.id}`);
+
+		toast.success("La note de frais a été créée avec succès.");
+	};
+
 	return (
-		<main className="h-full w-full flex flex-col p-8 lg:p-24 justify-start items-start ">
-			{/* Step 1: Upload */}
-			{step === "upload" && (
-				<section className="w-full  flex flex-col items-start gap-8">
+		<main className="h-full w-full flex flex-col p-8 lg:p-24 justify-start items-start">
+			{step === "upload-form" && (
+				<section className="w-full flex flex-col items-start gap-8">
 					<h1 className="text-3xl text-indigo-600 font-bold mt-8">Nouvelle note de frais</h1>
-					<div className="bg-indigo-50 rounded-2xl p-6 flex items-center gap-6 w-full">
-						<AnimatedLogo width={5} />
-						<TypeWriter text="Téléversez votre note de frais (jpg, jpeg, png, pdf)." />
-					</div>
 					<div className="flex flex-col lg:flex-row gap-4 w-full">
 						<button
-							className="flex flex-col items-center justify-center gap-2 p-12 bg-indigo-100 border border-indigo-300 rounded-2xl hover:bg-indigo-200 transition cursor-pointer w-full"
+							className="flex flex-col items-center justify-center gap-2 bg-indigo-100 border border-indigo-300 rounded-2xl hover:bg-indigo-200 transition cursor-pointer w-full h-96"
 							onClick={() => fileInputRef.current?.click()}
+							onDragOver={e => {
+								e.preventDefault();
+								e.currentTarget.classList.add("bg-indigo-200");
+							}}
+							onDragLeave={e => {
+								e.preventDefault();
+								e.currentTarget.classList.remove("bg-indigo-200");
+							}}
+							onDrop={e => {
+								e.preventDefault();
+								handleFileChange({ target: { files: e.dataTransfer.files } } as any);
+								e.currentTarget.classList.remove("bg-indigo-200");
+							}}
 						>
 							<AiOutlineCloudUpload className="w-8 h-8 text-indigo-600" />
-							<span className="font-medium">Sélectionner un fichier</span>
+							<span className="font-medium mt-6">
+								Pour commencer, téléversez votre note de frais (ou glissez-la ici)
+							</span>
 							<input
 								ref={fileInputRef}
 								type="file"
@@ -177,20 +269,7 @@ export default function Page() {
 						{isMobile && (
 							<button
 								className="flex flex-col items-center justify-center gap-2 p-12 bg-indigo-100 border border-indigo-300 rounded-2xl hover:bg-indigo-200 transition cursor-pointer w-full"
-								onClick={() => {
-									const cameraInput = document.createElement("input");
-									cameraInput.type = "file";
-									cameraInput.accept = "image/*";
-									(cameraInput as any).capture = "environment";
-									cameraInput.onchange = (e: Event) => {
-										handleFileChange(e as unknown as React.ChangeEvent<HTMLInputElement>);
-										// Nettoyage de l'élément après usage
-										setTimeout(() => cameraInput.remove(), 1000);
-									};
-									cameraInput.style.display = "none";
-									document.body.appendChild(cameraInput);
-									cameraInput.click();
-								}}
+								onClick={handleCameraClick}
 							>
 								<IoCameraOutline className="w-8 h-8 text-indigo-600" />
 								<span className="font-medium">Prendre une photo</span>
@@ -200,228 +279,597 @@ export default function Page() {
 				</section>
 			)}
 
-			{/* Step 2: Processing */}
-			{step === "processing" && (
-				<section className="w-full flex flex-col md:flex-row gap-8">
-					<div className="flex-1 flex flex-col items-center">
-						<div className="relative w-full max-w-md h-[600px] overflow-hidden flex items-stretch">
-							<Image
-								src={expense.blobUrl}
-								alt="Aperçu"
-								width={1920}
-								height={1080}
-								className="rounded-xl object-cover bg-white border-4 border-indigo-200 w-full h-full"
-								unoptimized
-								style={{ position: "absolute", inset: 0 }}
-							/>
-
+			{step !== "upload-form" && (
+				<section className="flex items-start gap-8 justify-between w-full">
+					<div className="flex-1">
+						{step !== "form" ? (
 							<motion.div
-								initial={{ top: "0%" }}
-								animate={{ top: ["-10%", "110%", "-10%"] }}
-								transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.15 }}
-								className="absolute top-0 left-0 right-0 h-4 text-center bg-indigo-500/75 blur-sm z-0"
-							/>
-						</div>
-						<button
-							className="mt-4 text-sm text-indigo-600 underline"
-							onClick={reset}
-						>
-							Recommencer
-						</button>
-					</div>
-					<div className="flex-1 flex flex-col gap-6 rounded-2xl p-8 items-center justify-center">
-						<h2 className="text-2xl font-bold text-indigo-700 mb-2"><Loader2 className="animate-spin w-6 h-6 inline-block mr-2" /> Traitement en cours...</h2>
-						<p className="text-gray-600">Nous analysons votre note de frais. Veuillez patienter quelques instants.</p>
-						<p className="text-sm text-gray-500">Si le traitement prend trop de temps, vous pouvez re-téléverser le fichier.</p>
-					</div>
-				</section>
-			)}
-
-			{/* Step 3: Guided Form */}
-			{step === "form" && expense && (
-				<section className="w-full flex flex-col md:flex-row gap-8">
-					<div className="flex-1 flex flex-col items-center">
-						<Image
-							src={expense.blobUrl}
-							alt="Aperçu"
-							width={1920}
-							height={1080}
-							className="rounded-xl object-contain bg-white border-4 border-indigo-200 w-full max-w-md"
-							unoptimized
-						/>
-						<button
-							className="mt-4 text-sm text-indigo-600 underline"
-							onClick={reset}
-						>
-							Recommencer
-						</button>
-					</div>
-					<div className="flex-1 flex flex-col gap-6 bg-white rounded-2xl p-8">
-						<h2 className="text-2xl font-bold text-indigo-700 mb-2">Vérifiez et complétez les informations</h2>
-						<form
-							className="flex flex-col gap-4"
-							onSubmit={e => {
-								e.preventDefault();
-								setStep("review");
-							}}
-						>
-							{FIELDS.map(f => (
-								<div key={f.key} className="flex flex-col gap-1">
-									<label className="font-semibold text-indigo-700">{f.label}</label>
-									<input
-										type={f.type}
-										className={`p-2 border-b focus:outline-none ${!expense.analysis?.[f.key]?.value ? "border-red-400" : "border-indigo-300"}`}
-										value={
-											f.type === "date"
-												? (() => {
-														const val = expense.analysis?.[f.key]?.value;
-														const date = val ? new Date(val) : null;
-														return date && !isNaN(date.getTime())
-															? date.toISOString().slice(0, 10)
-															: "";
-													})()
-												: (expense.analysis?.[f.key]?.value || "")
-										}
-										placeholder={f.placeholder}
-										onChange={e => handleFieldChange(f.key, e.target.value)}
-									/>
-								</div>
-							))}
-							<button
-								type="submit"
-								className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:bg-gray-300"
-								disabled={!isFormValid()}
+								initial={{ opacity: 1, y: 0, height: "30vh" }}
+								animate={step === "form" ? { opacity: 0, y: 20, height: 0, margin: 0, padding: 0 } : { opacity: 1, y: 0, height: "30vh" }}
+								transition={{ duration: 0.4 }}
+								style={{ overflow: "hidden" }}
+								className="h-[30vh] border gap-4 bg-white rounded-xl flex flex-col items-center justify-center"
 							>
-								Continuer
-							</button>
-						</form>
-					</div>
-				</section>
-			)}
+								<Loader2 className="text-2xl animate-spin text-indigo-600" />
+								<p className="text-neutral-500 text-sm">Les données de votre note de frais sont en cours de traitement...</p>
+							</motion.div>
+						) : (
+							<div className="flex flex-col gap-6">
+								<div className="flex flex-col gap-4 bg-white border rounded-xl p-4 shadow-sm">
+									<h3 className="font-semibold text-sm">Informations du commerçant</h3>
+									<div className="flex justify-between items-center gap-4">
+										<div className="flex flex-col flex-1 gap-2">
+											<label className="text-xs">Nom de l'entreprise</label>
+											<Input
+												type="text"
+												onChange={(e) =>
+													setExpenseData((prev: any) => ({
+														...prev,
+														company_name: { ...prev.company_name, value: e.target.value, error: false }
+													}))
+												}
+												placeholder="Nom de l'entreprise"
+												value={expenseData.company_name?.value || ""}
+												className="border rounded-lg p-2 text-sm w-full"
+											/>
+										</div>
+										<div className="flex flex-col flex-1  gap-2">
+											<label className="text-xs">Adresse</label>
+											<Input
+												type="text"
+												onChange={(e) =>
+													setExpenseData((prev: any) => ({
+														...prev,
+														company_address: { ...prev.company_address, value: e.target.value, error: false }
+													}))
+												}
+												placeholder="Adresse de l'entreprise"
+												value={expenseData.company_address?.value || ""}
+												className="border rounded-lg p-2 text-sm w-full"
+											/>
+										</div>
 
-			{/* Step 4: Review & Edit Items */}
-			{step === "review" && expense && (
-				<section className="w-full max-w-4xl flex flex-col gap-8">
-					<div className="flex flex-col gap-2">
-						<h3 className="text-xl font-semibold text-indigo-700">Résumé</h3>
-						<ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-							{FIELDS.map(f => (
-								<li key={f.key}>
-									<span className="font-semibold">{f.label} :</span>{" "}
-									{expense.analysis?.[f.key]?.value || <span className="text-red-700">Non renseigné</span>}
-								</li>
-							))}
-						</ul>
-					</div>
-					{Array.isArray(expense.analysis?.items) && (
-						<div>
-							<h4 className="text-lg font-semibold text-indigo-700 mb-2">Détails des articles</h4>
-							<div className="overflow-x-auto">
-								<table className="min-w-full border border-indigo-200 rounded-lg">
-									<thead>
-										<tr className="bg-indigo-50">
-											<th className="px-2 py-1 border">Nom</th>
-											<th className="px-2 py-1 border">Catégorie</th>
-											<th className="px-2 py-1 border">Quantité</th>
-											<th className="px-2 py-1 border">Prix unitaire</th>
-											<th className="px-2 py-1 border">Prix total</th>
-										</tr>
-									</thead>
-									<tbody>
-										{expense.analysis.items.map((item: any, idx: number) => {
-											const isCategoryAllowed =
-												!rules?.alloweds_categories ||
-												rules.alloweds_categories.length === 0 ||
-												rules.alloweds_categories.includes(item.category?.value.toLowerCase());
+									</div>
 
-											console.log("isCategoryAllowed", isCategoryAllowed, item.category?.value.toLowerCase(), rules?.alloweds_categories);
-											return (
-												<tr
-													key={idx}
-													className={!isCategoryAllowed ? "bg-red-100" : ""}
-												>
-													<td className="border px-2 py-1 w-96">
-														<input
-															type="text"
-															className="w-full bg-transparent border-b border-dotted focus:outline-none"
-															value={item.name?.value || ""}
-															placeholder="Nom"
-															onChange={e => handleItemChange(idx, "name", e.target.value)}
-														/>
-													</td>
-													<td className="border px-2 py-1">
-														<input
-															type="text"
-															className="w-full bg-transparent border-b border-dotted focus:outline-none"
-															value={item.category?.value || ""}
-															placeholder="Catégorie"
-															onChange={e => handleItemChange(idx, "category", e.target.value)}
-														/>
-													</td>
-													<td className="border px-2 py-1">
-														<input
-															type="number"
-															min={1}
-															className="w-full bg-transparent border-b border-dotted focus:outline-none"
-															value={item.quantity?.value ?? ""}
-															placeholder="Quantité"
-															onChange={e => handleItemChange(idx, "quantity", Number(e.target.value))}
-														/>
-													</td>
-													<td className="border px-2 py-1">
-														<input
-															type="number"
-															min={0}
-															step="0.01"
-															className="w-full text-right bg-transparent border-b border-dotted focus:outline-none"
-															value={item.unit_price?.value ?? ""}
-															placeholder="Prix unitaire"
-															onChange={e => handleItemChange(idx, "unit_price", Number(e.target.value))}
-														/>
-													</td>
-													<td className="border px-2 py-1">
-														<input
-															type="number"
-															min={0}
-															step="0.01"
-															className="w-full text-right bg-transparent border-b border-dotted focus:outline-none"
-															value={item.total_price?.value ?? ""}
-															placeholder="Prix total"
-															onChange={e => handleItemChange(idx, "total_price", Number(e.target.value))}
-														/>
-													</td>
-												</tr>
-											);
-										})}
-									</tbody>
-								</table>
+								</div>
+								<div className="flex flex-col gap-4 bg-white border rounded-xl p-4 shadow-sm">
+									<h3 className="font-semibold text-sm">Informations de la note de frais</h3>
+									<div className="flex justify-between items-center gap-4">
+										<div className="flex flex-col flex-1 gap-2">
+											<label className="text-xs">Date</label>
+											<Input
+												type="date"
+												onChange={(e) => {
+													const selectedDate = new Date(e.target.value);
+													const now = new Date();
+													const sixMonthsAgo = new Date();
+													sixMonthsAgo.setMonth(now.getMonth() - 6);
 
-								<p className="mt-6 text-sm text-balance">Les articles avec une catégorie non autorisée seront marqués en rouge, elle ne seront pas prises en compte dans la note de frais.</p>
+													if (selectedDate < sixMonthsAgo) {
+														setExpenseData((prev: any) => ({
+															...prev,
+															date: { ...prev.date, value: e.target.value, error: true }
+														}));
+														toast.error("La date ne peut pas être antérieure à 6 mois.");
+													} else {
+														setExpenseData((prev: any) => ({
+															...prev,
+															date: { ...prev.date, value: e.target.value, error: false }
+														}));
+													}
+												}}
+												placeholder="Date de la note de frais"
+												value={expenseData.date?.value || ""}
+												className="border rounded-lg p-2 text-sm w-full"
+											/>
+											{expenseData.date?.error && (
+												<span className="text-xs text-red-600">La date ne peut pas être antérieure à 6 mois.</span>
+											)}
+										</div>
+										<div className="flex flex-col flex-1 gap-2">
+											<label className="text-xs">Moyen de paiement</label>
+											<Select
+												value={expenseData.payment_method?.value || ""}
+												onValueChange={(value) =>
+													setExpenseData((prev: any) => ({
+														...prev,
+														payment_method: { ...prev.payment_method, value, error: false }
+													}))
+												}
+											>
+												<SelectTrigger>
+													<SelectValue placeholder="Sélectionner" />
+												</SelectTrigger>
+												<SelectContent>
+													<SelectGroup>
+														<SelectItem value="Titre Restaurant">Titre restaurant</SelectItem>
+														<SelectItem value="Carte Bancaire">Carte bancaire</SelectItem>
+														<SelectItem value="Espèce">Par espèce</SelectItem>
+													</SelectGroup>
+												</SelectContent>
+											</Select>
+										</div>
+									</div>
+									<div className="flex justify-between items-center gap-4">
+										<div className="flex flex-col flex-1 gap-2">
+											<label className="text-xs">Total HT</label>
+											<Input
+												type="text"
+												onChange={(e) => {
+													setExpenseData((prev: any) => ({
+														...prev,
+														total_ht: { ...prev.total_ht, value: e.target.value, error: false }
+													}));
+													recalculateTTC();
+												}}
+												placeholder="Total HT"
+												value={expenseData.total_ht?.value?.toFixed ? expenseData.total_ht.value.toFixed(2) : expenseData.total_ht?.value || ""}
+												className="border rounded-lg p-2 text-sm w-full"
+											/>
+										</div>
+										<div className="flex flex-col flex-1 gap-2">
+											<label className="text-xs">Total TVA</label>
+											<Input
+												type="text"
+												onChange={(e) => {
+													setExpenseData((prev: any) => ({
+														...prev,
+														total_vat: { ...prev.total_vat, value: e.target.value, error: false }
+													}));
+													recalculateTTC();
+												}}
+												placeholder="Total TVA"
+												value={expenseData.total_vat?.value?.toFixed ? expenseData.total_vat.value.toFixed(2) : expenseData.total_vat?.value || ""}
+												className="border rounded-lg p-2 text-sm w-full"
+											/>
+										</div>
+										<div className="flex flex-col flex-1 gap-2">
+											<label className="text-xs">Total TTC</label>
+											<Input
+												type="text"
+												disabled
+												placeholder="Total TTC"
+												value={
+													(expenseData.total_ht?.value && expenseData.total_vat?.value)
+														? (parseFloat(expenseData.total_ht.value) + parseFloat(expenseData.total_vat.value)).toFixed(2) + " €"
+														: ""
+												}
+												className="border rounded-lg p-2 text-sm w-full bg-neutral-200 text-black cursor-not-allowed"
+											/>
+										</div>
+									</div>
+								</div>
+								<div className="flex flex-col gap-4 bg-white border rounded-xl p-4 shadow-sm">
+									<h3 className="font-semibold text-sm">Détails de la note de frais</h3>
+									{expenseData.items && expenseData.items.length > 0 ? (
+										expenseData.items.map((item: any, index: number) => (
+											<div key={index} className="flex justify-between items-center gap-4">
+												<div className="flex flex-col flex-1 gap-2">
+													<label className="text-xs">Nom</label>
+													<Input
+														type="text"
+														onChange={(e) =>
+															setExpenseData((prev: any) => {
+																const newItems = [...prev.items];
+																newItems[index] = {
+																	...newItems[index],
+																	name: { ...newItems[index].name, value: e.target.value, error: false }
+																};
+																return { ...prev, items: newItems };
+															})
+														}
+														placeholder="Nom de l'article"
+														value={item.name?.value || ""}
+														className="border rounded-lg p-2 text-sm w-full"
+													/>
+												</div>
+												<div className="flex flex-col flex-1 gap-2">
+													<label className="text-xs">Quantité</label>
+													<Input
+														type="number"
+														onChange={(e) =>
+															setExpenseData((prev: any) => {
+																const newItems = [...prev.items];
+																newItems[index] = {
+																	...newItems[index],
+																	quantity: { ...newItems[index].quantity, value: e.target.value, error: false }
+																};
+																return { ...prev, items: newItems };
+															})
+														}
+														placeholder="Quantité"
+														value={item.quantity?.value || ""}
+														className="border rounded-lg p-2 text-sm w-full"
+													/>
+												</div>
+												<div className="flex flex-col flex-1 gap-2">
+													<label className="text-xs">Total</label>
+													<Input
+														type="number"
+														onChange={(e) =>
+															setExpenseData((prev: any) => {
+																const newItems = [...prev.items];
+																newItems[index] = {
+																	...newItems[index],
+																	total_price: { ...newItems[index].total_price, value: e.target.value, error: false }
+																};
+																return { ...prev, items: newItems };
+															})
+														}
+														placeholder="Total"
+														value={item.total_price?.value || ""}
+														className="border rounded-lg p-2 text-sm w-full"
+													/>
+												</div>
+												
+												<div className="flex flex-col flex-1 gap-2">
+													<label className="text-xs">Catégorie</label>
+													<Select
+														value={item.category?.value || ""}
+														onValueChange={(value) =>
+															setExpenseData((prev: any) => {
+																const newItems = [...prev.items];
+																newItems[index] = {
+																	...newItems[index],
+																	category: { ...newItems[index].category, value, error: false }
+																};
+																return { ...prev, items: newItems };
+															})
+														}
+													>
+														<SelectTrigger>
+															<SelectValue placeholder="Sélectionner" />
+														</SelectTrigger>
+														<SelectContent>
+															<SelectGroup>
+																<SelectItem value="Restauration">Restauration</SelectItem>
+																<SelectItem value="Transport">Transport</SelectItem>
+																<SelectItem value="Hébergement">Hébergement</SelectItem>
+																<SelectItem value="Autres">Autres</SelectItem>
+															</SelectGroup>
+														</SelectContent>
+													</Select>
+												</div>
+											</div>
+										))
+									) : (
+										<p className="text-neutral-500 text-sm">Aucun détail de note de frais disponible.</p>
+									)}
+								</div>
 							</div>
-						</div>
-					)}
-					<div className="flex gap-4 mt-4">
-						<button
-							className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-							onClick={() => setStep("form")}
-						>
-							Modifier les infos
-						</button>
-						<button
-							className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
-							onClick={handleSave}
-						>
-							Enregistrer la note de frais
-						</button>
-					</div>
-				</section>
-			)}
+						)}
 
-			{/* Step 5: Saving */}
-			{step === "saving" && (
-				<section className="flex flex-col items-center gap-4 mt-24">
-					<Loader2 className="animate-spin w-10 h-10 text-indigo-600" />
-					<p className="text-lg text-indigo-800">Enregistrement en cours...</p>
+
+
+					</div>
+					<div className="w-1/3 pt-0 flex flex-col gap-4">
+						{ step !== "form" && (
+							<div className="bg-white shadow-sm rounded-xl border flex flex-col gap-4 py-4">
+								<div className="flex items-center gap-4 px-6">
+									<div className="w-6 flex items-center justify-center">
+										{ step === "upload" ? (
+											<Loader2 className="text-2xl animate-spin text-indigo-600" />	
+										) : (
+											<FaCircleCheck className="text-lg text-indigo-600" />
+										)}
+									</div>
+									<div className="flex flex-col gap-1">
+										<p className="text-sm text-indigo-600 font-semibold">Importation de la note de frais</p>
+										<motion.p
+											className="text-xs text-neutral-600"
+											initial={{ opacity: 1, height: "auto" }}
+											animate={step === "upload" ? { opacity: 1, height: "auto" } : { opacity: 0, height: 0 }}
+											transition={{ duration: 0.3 }}
+										>
+											Cela peut prendre quelques secondes.
+										</motion.p>
+									</div>
+								</div>
+								<div className={cn("flex items-center gap-4 px-6", {
+									"opacity-50": step === "upload",
+								})}>
+									<div className="w-6 flex items-center justify-center">
+										{ step === "upload" ? (
+											<Loader2 className="text-2xl text-neutral-200" />
+										) : step === "processing" ? (
+											<Loader2 className="text-2xl animate-spin text-indigo-600" />
+										) : (
+											<FaCircleCheck className="text-lg text-indigo-600" />
+										)}
+									</div>
+									<div className="flex flex-col gap-1">
+										<p className="text-sm text-indigo-600 font-semibold">Traitement de la note de frais</p>
+										<motion.p
+											className="text-xs text-neutral-600"
+											initial={{ opacity: 1, height: "auto" }}
+											animate={step === "processing"
+												? { opacity: 1, height: "auto", y: 0 }
+												: { opacity: 0, height: 0, y: 20 }
+											}
+											exit={{ opacity: 0, height: 0, y: 20 }}
+											transition={{ duration: 0.3 }}
+										>
+											Nous analysons les données de votre note de frais.
+										</motion.p>
+									</div>
+								</div>
+								<div
+									className={cn("flex items-center gap-4 px-6", {
+										"opacity-50": step !== "preform",
+									})}
+								>
+									<div className="w-6 flex items-center justify-center">
+										{ step === "upload" || step === "processing" ? (
+											<Loader2 className="text-2xl text-neutral-200" />
+										) : step === "preform" ? (
+											<Loader2 className="text-2xl animate-spin text-indigo-600" />
+										) : (
+											<FaCircleCheck className="text-2xl text-indigo-600" />
+										)}
+									</div>
+									<div className="flex flex-col gap-1">
+										<p className="text-sm text-indigo-600 font-semibold">Réception des données</p>
+										<motion.p
+											className="text-xs text-neutral-600"
+											initial={{ opacity: 1, height: "auto" }}
+											animate={step === "preform" ? { opacity: 1, height: "auto" } : { opacity: 0, height: 0 }}
+											transition={{ duration: 0.3 }}
+										>
+											Nous avons reçu les données de votre note de frais.
+										</motion.p>
+									</div>
+								</div>
+
+							</div>
+						)}
+
+						{step=== "form" && (
+							<>
+							<div className="bg-white shadow-sm rounded-xl border flex flex-col gap-4 p-4">
+								<h3 className="font-semibold text-sm">Récapitulatif de la note de frais</h3>
+								<div className="flex flex-col gap-2">
+									<div className="flex justify-between items-center">
+										<span className="text-xs text-neutral-500">Nom de l'entreprise</span>
+										<span className="text-sm text-neutral-800">{expenseData.company_name?.value || "Non renseigné"}</span>
+									</div>
+									<div className="flex justify-between items-center">
+										<span className="text-xs text-neutral-500">Date</span>
+										<span className="text-sm text-neutral-800">{expenseData.date?.value || "Non renseigné"}</span>
+									</div>
+									<div className="flex justify-between items-center">
+										<span className="text-xs text-neutral-500">Moyen de paiement</span>
+										<span className="text-sm text-neutral-800">{expenseData.payment_method?.value || "Non renseigné"}</span>
+									</div>
+									<div className="flex justify-between items-center">
+										<span className="text-xs text-neutral-500">Total TVA</span>
+										<span className="text-sm text-neutral-800">
+											{expenseData.total_vat?.value
+												? parseFloat(expenseData.total_vat.value).toFixed(2) + " €"
+												: "Non renseigné"}
+										</span>
+									</div>
+									<div className="flex justify-between items-center">
+										<span className="text-xs text-neutral-500">Total HT</span>
+										<span className="text-sm text-neutral-800">
+											{expenseData.total_ht?.value
+												? parseFloat(expenseData.total_ht.value).toFixed(2) + " €"
+												: "Non renseigné"}
+										</span>
+									</div>
+									<div className="flex justify-between items-center border-t pt-2">
+										<span className="text-sm text-neutral-800 font-medium">Total TTC</span>
+										<span className="text-neutral-800 font-medium">
+											{expenseData.total_ttc?.value
+												? parseFloat(expenseData.total_ttc.value).toFixed(2) + " €"
+												: "Non renseigné"}
+										</span>
+									</div>
+
+									<div className="border-t pt-2"/>
+
+
+									{(() => {
+										const errorField = Object.entries(expenseData).find(
+											([key, field]: [string, any]) => field?.error === true
+										);
+										const errorItem = expenseData.items && expenseData.items.find((item: any) =>
+											Object.values(item).some((v: any) => v?.error === true)
+										);
+										const errorMessages: string[] = [];
+
+										// Check main fields
+										Object.entries(expenseData).forEach(([key, field]: [string, any]) => {
+											if (field?.error === true) {
+												switch (key) {
+													case "company_name":
+														errorMessages.push("Veuillez renseigner le nom de l'entreprise.");
+														break;
+													case "company_address":
+														errorMessages.push("Veuillez renseigner l'adresse de l'entreprise.");
+														break;
+													case "date":
+														errorMessages.push("Veuillez renseigner la date.");
+														break;
+													case "payment_method":
+														errorMessages.push("Veuillez sélectionner le moyen de paiement.");
+														break;
+													case "total_ht":
+														errorMessages.push("Veuillez renseigner le total HT.");
+														break;
+													case "total_vat":
+														errorMessages.push("Veuillez renseigner le total TVA.");
+														break;
+													case "total_ttc":
+														errorMessages.push("Veuillez renseigner le total TTC.");
+														break;
+													default:
+														errorMessages.push("Veuillez corriger le champ " + key + ".");
+												}
+											}
+										});
+
+										// Check items
+										if (expenseData.items && Array.isArray(expenseData.items)) {
+											expenseData.items.forEach((item: any, idx: number) => {
+												Object.entries(item).forEach(([key, field]: [string, any]) => {
+													if (field?.error === true) {
+														switch (key) {
+															case "name":
+																errorMessages.push(`Veuillez renseigner le nom de l'article #${idx + 1}.`);
+																break;
+															case "quantity":
+																errorMessages.push(`Veuillez renseigner la quantité de l'article #${idx + 1}.`);
+																break;
+															case "unit_price":
+																errorMessages.push(`Veuillez renseigner le prix unitaire de l'article #${idx + 1}.`);
+																break;
+															case "total_price":
+																errorMessages.push(`Veuillez renseigner le total de l'article #${idx + 1}.`);
+																break;
+															case "vat_rate":
+																errorMessages.push(`Veuillez renseigner le taux de TVA de l'article #${idx + 1}.`);
+																break;
+															case "vat_amount":
+																errorMessages.push(`Veuillez renseigner le montant de TVA de l'article #${idx + 1}.`);
+																break;
+															case "category":
+																errorMessages.push(`Veuillez renseigner la catégorie de l'article #${idx + 1}.`);
+																break;
+															default:
+																errorMessages.push(`Veuillez corriger le champ ${key} de l'article #${idx + 1}.`);
+														}
+													}
+												});
+											});
+										}
+
+										return errorMessages.length > 0 ? (
+											<ul className="text-xs text-red-600 mb-2 list-disc list-inside">
+												{errorMessages.map((msg, i) => (
+													<li key={i}>{msg}</li>
+												))}
+											</ul>
+										) : null;
+									})()}
+
+
+									{ expense.status === "processed" ? (
+										<>
+											<div className="flex items-center gap-4 bg-neutral-500/5 rounded-lg p-4">
+												<div className="w-6 flex items-center justify-center">
+													<IoIosInformationCircle className="text-neutral-500 w-5 h-5" />
+												</div>
+												<p className="text-xs text-neutral-500">
+													Les informations sont basées sur les données extraites de votre note de frais. Veuillez vérifier leur exactitude avant de soumettre.
+												</p>
+											</div>
+
+											<Button 
+												className={cn("mt-2 w-full bg-indigo-600 hover:bg-indigo-700 text-white", {
+													"bg-indigo-100 cursor-not-allowed hover:bg-indigo-100 text-neutral-500": loading
+												})}
+												disabled={
+													Object.values(expenseData).some((field: any) => field?.error === true) ||
+													(expenseData.items && expenseData.items.some((item: any) =>
+														Object.values(item).some((v: any) => v?.error === true)
+													))
+												}
+												onClick={handleSubmit}
+											>
+												{ loading && (
+													<Loader2 className="w-4 h-4 animate-spin mr-2" />
+												)}
+												Soumettre la note de frais
+											</Button>
+											<Button
+												variant="outline"
+												className="mt-2 w-full"
+												onClick={reset}
+											>
+												Annuler et supprimer
+											</Button>
+										</>	
+									) : (
+										<>
+											<div className="flex justify-between items-center">
+												<span className="text-xs text-neutral-500">Statut de la note de frais</span>
+												<span className="text-neutral-800 font-medium">
+													{expense.status === "pending" && (
+														<span className="bg-yellow-100/50 text-yellow-700 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+															<svg className="w-3 h-3 fill-yellow-400" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" /></svg>
+															En attente
+														</span>
+													)}
+													{expense.status === "approved" && (
+														<span className="bg-green-100/50 text-green-700 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+															<svg className="w-3 h-3 fill-green-400" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" /></svg>
+															Approuvé
+														</span>
+													)}
+													{expense.status === "rejected" && (
+														<span className="bg-red-100/50 text-red-700 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+															<svg className="w-3 h-3 fill-red-400" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" /></svg>
+															Rejeté
+														</span>
+													)}
+													{!expense.status && (
+														<span className="bg-gray-100/50 text-gray-500 px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+															<svg className="w-3 h-3 fill-gray-400" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" /></svg>
+															Statut inconnu
+														</span>
+													)}
+												</span>
+											</div>
+											
+										</>
+									)}
+
+									
+
+								</div>
+							</div>
+							<div className="bg-white shadow-sm rounded-xl border flex flex-col gap-4 p-4">
+								<p className="text-neutral-500 text-xs">
+									L'image que vous avez téléversée sera transmise à votre comptable pour vérification et archivage.{" "}
+									<span className="text-xs text-indigo-500 hover:underline cursor-pointer" onClick={() => {
+									// display in browser tab
+									if (file && file.blobUrl) {
+										window.open(file.blobUrl, "_blank");
+									}
+								}}>
+									{file.name} ({(file.size / 1024).toFixed(2)} Ko)
+								</span>
+								</p>
+								<motion.div
+									initial={false}
+									animate={showPreview ? { opacity: 1,  height: "auto" } : { opacity: 0, height: 0 }}
+									transition={{ duration: 0.3, ease: "easeInOut" }}
+									exit={{ opacity: 0, height: 0 }}
+									style={{ overflow: "hidden" }}
+									className="w-full h-auto flex items-center justify-center -mt-3"
+								>
+									{showPreview && (
+										<Image 
+											src={file.base64 || ""}
+											alt="Aperçu de la note de frais"
+											width={1920}
+											height={1080}
+										/>
+									)}
+								</motion.div>
+								<Button
+									variant="outline"
+									className=" w-full"
+									onClick={() => setShowPreview((prev: boolean) => !prev)}
+								>
+									{showPreview ? "Masquer l’aperçu" : "Afficher l’aperçu"}
+								</Button>
+								
+							</div>
+
+							</>
+						)}
+					</div>
 				</section>
 			)}
 		</main>

@@ -12,7 +12,18 @@ const config = {
 	}
 }
 
-
+/** * Retrieves the details of an expense by its ID.
+ * * @async
+ * * @function get
+ * * @param {import('express').Request} req - Express request object, expects `expenseId` in params.
+ * * @param {import('express').Response} res - Express response object.
+ * * @returns {Promise<void>} Sends a JSON response with the expense details or an error message.
+ * * @description	
+ * * - Validates that the `expenseId` is provided in the request parameters.
+ * * - Checks if the expense with the given ID exists in the database.
+ * * - Retrieves the user associated with the expense.
+ * * - Returns the expense details along with user information if found, or appropriate HTTP status codes and messages for errors.
+ */
 const get = async (req, res) => {
 	const { expenseId } = req.params;
 	if (!expenseId) {
@@ -48,6 +59,23 @@ const get = async (req, res) => {
 }
 
 
+/**
+ * Updates the status of an expense by its ID.
+ *
+ * @async
+ * @function put
+ * @param {import('express').Request} req - Express request object, expects `expenseId` in params and `status` in query.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>} Sends a JSON response with the result of the update operation.
+ *
+ * @throws {400} If `expenseId` or `status` is missing, or if `status` is invalid.
+ * @throws {404} If the expense is not found.
+ *
+ * @description
+ * This function validates the provided expense ID and status, checks if the expense exists,
+ * updates its status in the database, and sends an email notification to the user associated
+ * with the expense. Responds with appropriate HTTP status codes and messages based on the outcome.
+ */
 const put = async (req, res) => {
 	const { expenseId } = req.params;
 	const { status } = req.query;

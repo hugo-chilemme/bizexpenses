@@ -2,13 +2,13 @@ const database = require('../../../utils/database');
 const {ObjectId} = require('mongodb');
 const config = {
 	post: {
-		isAuthenticated: true,
+		isAuthentified: true,
 	},
 	get: {
-		isAuthenticated: true,
+		isAuthentified: true,
 	},
 	delete: {
-		isAuthenticated: true,
+		isAuthentified: true,
 	}
 }
 /** * Retrieves the data of an expense by its ID.
@@ -26,7 +26,7 @@ const config = {
 const get = async (req, res) => {
 	// get data of an expense
 	const { expenseId } = req.params;
-
+	console.log(req.user);
 
 
 	if (!expenseId) {

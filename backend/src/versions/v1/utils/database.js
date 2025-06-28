@@ -1,22 +1,29 @@
 const { MongoClient } = require('mongodb');
-const uri = process.env.MONGODB_URL || 'mongodb://localhost:27017';
-const client = new MongoClient(uri);
 
-(async () => {
-	await client.connect();
-	console.log('Database is running on port');
-})();
+const uri = process.env.MONGODB_URL;
+const dbName = process.env.MONGODB_DB;
 
-if (!process.env.MONGODB_URL) {
+if (!uri) {
 	console.error('MONGODB_URL is not set in the environment variables');
 	process.exit(1);
 }
 
-if (!process.env.MONGODB_DB) {
+if (!dbName) {
 	console.error('MONGODB_DB is not set in the environment variables');
 	process.exit(1);
 }
 
-const init = () => client.db(process.env.MONGODB_DB);
+const client = new MongoClient(uri);
 
-module.exports = init;
+let dbInstance = null;
+
+async function connectDB() {
+	if (!dbInstance) {
+		await client.connect();
+		dbInstance = client.db(dbName);
+		console.log('Connected to MongoDB');
+	}
+	return dbInstance;
+}
+
+module.exports = connectDB;

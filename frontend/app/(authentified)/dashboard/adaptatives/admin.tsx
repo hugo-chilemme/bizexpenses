@@ -59,7 +59,7 @@ export default function AdminDashboard() {
 	const handleAddEmployee = async () => {
 		if (!validateEmployee()) return;
 		try {
-			const response = await ApiController("users", "POST", newEmployee);
+			const response: any = await ApiController("users", "POST", newEmployee);
 			if (response.status === "success") {
 				setEmployees([...employees, response.data]);
 				setNewEmployee(initialEmployee);
@@ -75,7 +75,7 @@ export default function AdminDashboard() {
 	const handleDeleteEmployee = async (employeeId: string) => {
 		if (!window.confirm("Êtes-vous sûr de vouloir supprimer cet employé ?")) return;
 		try {
-			const response = await ApiController("users", "DELETE", { userId: employeeId });
+			const response: any = await ApiController("users", "DELETE", { userId: employeeId });
 			if (response.status === "success") {
 				setEmployees(employees.filter(emp => emp.id !== employeeId));
 				toast.success("Employé supprimé avec succès.");

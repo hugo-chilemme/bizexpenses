@@ -13,6 +13,10 @@ const config = {
     delete: {
         isAuthentified: true,
         _entreprise_roles: ['owner', 'hr'],
+    },
+    put: {
+        isAuthentified: true,
+        _entreprise_roles: ['owner'],
     }
 };
 
@@ -157,4 +161,37 @@ const del = async (req, res) => {
     res.status(200).json({ status: 'success', message: 'User deleted successfully' });
 };        
 
-module.exports = { get, post, config, delete: del };
+
+
+const put = async (req, res) => {
+    // update role
+    const { userId, role } = req.query;
+
+    if (!userId || !role) {
+        return res.status(400).json({ status: 'error', message: 'User ID and role are required' });
+    }   
+
+    const entrepriseUuid = req.user.entreprise.uuid;
+    // Check if the user exists
+    const user = await database().collection('users').findOne({ uuid: userId });
+    if (!user) {
+        return res.status(404).json({ status: 'error', message: 'User not found' });
+    }
+
+    // Check if the user is part of the entreprise
+    const entreprise = await database().collection('entreprises').findOne({ uuid: entrepriseUuid });
+    if (!entreprise || !entreprise.users.some(u => u.id === userId))
+    {
+        return res.status(404).json({ status: 'error', message: 'User not part of the entreprise' });
+    }   
+
+    // Update the user's role
+    await database().collection('entreprises').updateOne(
+        { uuid: entrepriseUuid, "users.id": userId },
+        { $set: { "users.$.role": role } }  
+    );
+
+    res.status(200).json({ status: 'success', message: 'User role updated successfully' });
+}
+
+module.exports = { get, post, config, delete: del, put };

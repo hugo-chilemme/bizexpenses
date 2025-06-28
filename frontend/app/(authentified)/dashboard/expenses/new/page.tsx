@@ -127,9 +127,9 @@ export default function Page() {
 		setImagePreview(blobUrl);
 		setFile(selectedFile);
 		setStep("upload");
-		await new Promise((r) => setTimeout(r, 1000));
 
-		setStep("processing");
+
+
 
 
 		
@@ -143,11 +143,10 @@ export default function Page() {
 			reset();
 			return;
 		}
+		setStep("processing");
 
 		const id = response.id;
 		history.pushState({}, '', `/dashboard/expenses/${id}`);
-
-		toast.info(id);
 
 		const interval = setInterval(async () => {
 			const statusResponse: any = await ApiController(`expenses/${id}/status`, 'GET');
@@ -169,7 +168,7 @@ export default function Page() {
 				setStep("form");
 				setExpense(statusResponse.data);
 				setExpenseData(statusResponse.data.data);
-			}, 1000);
+			}, 250);
 
 
 		}, 2000);

@@ -77,19 +77,27 @@ const post = async (req, res) => {
 		// create entreprise
 		const entreprise = {
 			uuid: uuid.v4().replace(/-/g, ''),
-			name: companyName,
-			size: companySize,
+			name: companyName.toLowerCase(),
+			size: companySize.toLowerCase(),
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			userId: userId,
 			rules: {
 				submission_deadline: 30,
-				alloweds_categories: ['restauration', 'transport', 'loisirs', 'sante', 'autres'],
+				alloweds_categories: [
+					'transports',
+					'restauration',
+					'hotel',
+					'fournitures',
+					'alcools',
+					'autres'
+				],
 				limits: {
+					transports: 25,
 					restauration: 25,
-					transport: 25,
-					loisirs: 25,
-					sante: 25,
+					hotel: 25,
+					fournitures: 25,
+					alcools: 25,
 					autres: 25
 				}
 			},

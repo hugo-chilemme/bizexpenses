@@ -65,7 +65,7 @@ export default function Create({params}: Readonly<{
 							Veuillez ouvrir votre messagerie pour valider votre identité
 						</CardTitle>
 						<p className="text-gray-500 text-center text-balance">
-							Cette étape survient dés qu'un appareil ou une localisation inhabituelle est détectée.
+							Cette étape survient dés qu&apos;un appareil ou une localisation inhabituelle est détectée.
 						</p>
 
 						<div>

@@ -220,7 +220,7 @@ export default function AnimatedTicket({
 				<div className="flex flex-col items-center justify-center mt-4 w-[150%] -ml-[25%]">
 					<IoChevronUp className="text-white" style={{ width: 24, height: 24 }} />
 					<p className="text-balance text-sm text-white text-center">
-						En fonction des règles de l'entreprise, certains frais peuvent être remboursés ou non.
+						En fonction des règles de l&apos;entreprise, certains frais peuvent être remboursés ou non.
 					</p>
 				</div>
 			)}

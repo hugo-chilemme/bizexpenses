@@ -21,7 +21,7 @@ const config = {
  * retrieves the list of expenses from the database, and sends the response.
  */
 const get = async (req, res) => {
-	const { status } = req.query;
+	const { status, image } = req.query;
 
 	// Helper to fetch user info for a list of expenses
 	const addUserInfo = async (items) => {
@@ -41,6 +41,7 @@ const get = async (req, res) => {
 			user: userMap[item.userId?.toString()] || null
 		}));
 	};
+	
 
 	if (status && ['preparing', 'pending', 'approved', 'rejected', 'all'].includes(status)) {
 		if (req.user.entreprise.role === "user")

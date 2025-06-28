@@ -10,6 +10,7 @@ import AnimatedLogo from "@/components/AnimatedLogo";
 import { toast } from "sonner";
 import ApiController from "@/lib/api-controller";
 import { useRouter } from "next/navigation";
+import { getDeviceInfo } from "@/lib/utils";
 
 type Step = "companyName" | "companySize" | "userName" | "userEmail" | "done";
 
@@ -77,6 +78,10 @@ export default function Page() {
 			return;
 		}
 		
+
+		const { userAgent, platform, language, deviceId } = getDeviceInfo();
+
+		
 		setLoading(true);
 		// Simulate async
 		const response: any = await ApiController("signup", "POST", {
@@ -86,6 +91,10 @@ export default function Page() {
 			lastName: userLastName,
 			email: userEmail,
 			password,
+			userAgent,
+			platform,
+			language,
+			deviceId,
 		});
 
 		setLoading(false);
@@ -99,10 +108,10 @@ export default function Page() {
 		toast.success("Inscription réussie !");
 
 
-		localStorage.setItem("authorization", response.authorization);
-		localStorage.setItem("uuid", response.user.uuid);
-		if (response.user.role) {
-				localStorage.setItem("role", response.user.role);
+		localStorage.setItem("authorization", response.data.authorization);
+		localStorage.setItem("uuid", response.data.user.uuid);
+		if (response.data.user.role) {
+			localStorage.setItem("role", response.data.user.role);
 		}
 
 		router.push(`/dashboard`);

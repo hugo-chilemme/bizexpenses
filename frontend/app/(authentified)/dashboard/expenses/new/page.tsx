@@ -139,6 +139,11 @@ export default function Page() {
 			reset();
 			return;
 		}
+
+		setStep("file-check");
+
+		await new Promise((resolve) => setTimeout(resolve, 2000));
+
 		setStep("processing");
 
 		const id = response.id;
@@ -725,11 +730,47 @@ export default function Page() {
 										</motion.p>
 									</div>
 								</div>
+								{/* Nouveau bloc : Contrôle du fichier */}
 								<div className={cn("flex items-center gap-4 px-6", {
-									"opacity-50": step === "upload",
+									"opacity-50": step !== "file-check" && step !== "processing" && step !== "preform",
 								})}>
 									<div className="w-6 flex items-center justify-center">
 										{ step === "upload" ? (
+											<Loader2 className="text-2xl text-neutral-200" />
+										) : step === "file-check" ? (
+											<Loader2 className="text-2xl animate-spin text-indigo-600" />
+										) : (
+											<FaCircleCheck className="text-lg text-indigo-600" />
+										)}
+									</div>
+									<div className="flex items-center justify-between gap-1 w-full">
+										<div>
+											<p className="text-sm text-indigo-600 font-semibold w-full">
+												<span>Détection des fausses notes de frais</span>
+											</p>
+											{/* Animation conditionnelle pour le texte */}
+											<motion.p
+												className="text-xs text-neutral-600"
+												initial={{ opacity: 1, height: "auto" }}
+												animate={step === "file-check"
+													? { opacity: 1, height: "auto", y: 0 }
+													: { opacity: 0, height: 0, y: 20 }
+												}
+												exit={{ opacity: 0, height: 0, y: 20 }}
+												transition={{ duration: 0.3 }}
+											>
+												Nous vérifions l&apos;authenticité de votre note de frais.
+											</motion.p>
+										</div>
+
+										<span className="bg-red-500/10 font-semibold text-red-700 uppercase px-3 py-1 rounded text-xs ">Bêta</span>
+									</div>
+								</div>
+								<div className={cn("flex items-center gap-4 px-6", {
+									"opacity-50": step !== "processing" && step !== "preform",
+								})}>
+									<div className="w-6 flex items-center justify-center">
+										{ step === "upload" || step === "file-check" ? (
 											<Loader2 className="text-2xl text-neutral-200" />
 										) : step === "processing" ? (
 											<Loader2 className="text-2xl animate-spin text-indigo-600" />
@@ -759,7 +800,7 @@ export default function Page() {
 									})}
 								>
 									<div className="w-6 flex items-center justify-center">
-										{ step === "upload" || step === "processing" ? (
+										{ step === "upload" || step === "file-check" || step === "processing" ? (
 											<Loader2 className="text-2xl text-neutral-200" />
 										) : step === "preform" ? (
 											<Loader2 className="text-2xl animate-spin text-indigo-600" />
@@ -779,20 +820,18 @@ export default function Page() {
 										</motion.p>
 									</div>
 								</div>
-
 							</div>
-								<motion.div
-										className="border gap-4 bg-white rounded-xl flex flex-col  justify-center p-8"
-										initial={{ opacity: 0, y: 10 }}
-										animate={{ opacity: 1, y: 0 }}
-										transition={{ delay: 0.5, duration: 0.4 }}
-									>
-										<div className="h-8 w-full bg-neutral-200 rounded-lg animate-pulse" />
-										{/* Simulate paragraph */}
-										<div className="h-4 w-3/4 bg-neutral-200 rounded animate-pulse" />
-										<div className="h-4 w-1/2 bg-neutral-200 rounded animate-pulse" />
-										
-								</motion.div>
+							<motion.div
+								className="border gap-4 bg-white rounded-xl flex flex-col  justify-center p-8"
+								initial={{ opacity: 0, y: 10 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={{ delay: 0.5, duration: 0.4 }}
+							>
+								<div className="h-8 w-full bg-neutral-200 rounded-lg animate-pulse" />
+								{/* Simulate paragraph */}
+								<div className="h-4 w-3/4 bg-neutral-200 rounded animate-pulse" />
+								<div className="h-4 w-1/2 bg-neutral-200 rounded animate-pulse" />
+							</motion.div>
 							</>
 						)}
 

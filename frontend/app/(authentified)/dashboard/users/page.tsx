@@ -115,7 +115,31 @@ export default function AdminDashboard() {
 										<td className="py-3 px-4">{emp.email}</td>
 										<td className="py-3 px-4">
 											{user.entreprise.role === "owner" ? (
-											<Select value={emp.role}>
+											<Select
+												value={emp.role}
+												onValueChange={async (value) => {
+													if (value === emp.role) return; // Pas de changement
+													const updatedEmployees = employees.map(e =>
+														e.id === emp.id ? { ...e, role: value as "user" | "hr" | "owner" } : e
+													);
+
+													try {
+														const response = await ApiController("users", "PUT", {
+															userId: emp.id,
+															role: value,
+														});
+														if (response.status === "success") {
+															setEmployees(updatedEmployees);
+															toast.success("Rôle mis à jour avec succès.");
+														} else {
+															toast.error("Erreur lors de la mise à jour du rôle de l'employé.");
+														}
+													} catch (error) {
+														console.error("Error updating employee role:", error);
+														toast.error("Erreur lors de la mise à jour du rôle de l'employé.");
+													}
+												}}
+											>
 												<SelectTrigger className="w-[220px] border-none text-xs shadow-none">
 													<SelectValue
 														placeholder="Sélectionner un rôle"

@@ -101,6 +101,8 @@ const AccountSettingsPage = () => {
 					Attention, cette action est irréversible. Si vous supprimez votre compte, toutes vos données seront perdues.<br/>
 					Vous devrez contacter votre administrateur pour réactiver votre compte si vous changez d&apos;avis.
 				</p>
+
+				{ user.entreprise.role !== "owner" && (
 				<AlertDialog>
 					<AlertDialogTrigger className="bg-red-500 border border-red-500 text-sm text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors">
 						Supprimer mon compte
@@ -124,6 +126,13 @@ const AccountSettingsPage = () => {
 						</AlertDialogFooter>
 					</AlertDialogContent>
 				</AlertDialog>
+				)}
+
+				{ user.entreprise.role === "owner" && (
+					<p className="text-sm text-red-500">
+						Vous ne pouvez pas supprimer votre compte car vous êtes l&apos;administrateur de l&apos;entreprise. Veuillez contacter le support si vous souhaitez supprimer votre compte.
+					</p>
+				)}
 				
 			</div>
 		</div>

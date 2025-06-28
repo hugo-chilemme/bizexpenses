@@ -35,9 +35,13 @@ const get = async (req, res) => {
 
 	const expense = await database().collection('expenses').findOne({ _id: new ObjectId(expenseId) });
 
-	if (expense.userId.toString() !== req.user._id.toString() && req.user.entreprise.role !== 'owner' && req.user.entreprise.role !== 'hr') {
-		return res.status(403).json({ status: 'error', error: 'Forbidden' });
+	if (!expense) {
+		return res.status(404).json({ status: 'error', error: 'Expense not found' });
 	}
+
+	// if (expense.userId.toString() !== req.user._id.toString() && req.user.entreprise.role !== 'owner' && req.user.entreprise.role !== 'hr') {
+	// 	return res.status(403).json({ status: 'error', error: 'Forbidden' });
+	// }
 
 	if (!expense) {
 		return res.status(404).json({ status: 'error', error: 'Expense not found' });
@@ -78,9 +82,9 @@ const post = async (req, res) => {
 		return res.status(404).json({ status: 'error', error: 'Expense not found' });
 	}
 
-	if (expenseData.userId.toString() !== req.user._id.toString() && req.user.entreprise.role !== 'owner' && req.user.entreprise.role !== 'hr') {
-		return res.status(403).json({ status: 'error', error: 'Forbidden' });
-	}
+	// if (expenseData.userId.toString() !== req.user._id.toString() && req.user.entreprise.role !== 'owner' && req.user.entreprise.role !== 'hr') {
+	// 	return res.status(403).json({ status: 'error', error: 'Forbidden' });
+	// }
 
 	const result = await database().collection('expenses').updateOne(
 		{ _id: new ObjectId(expenseId) },
@@ -107,7 +111,6 @@ const post = async (req, res) => {
  * - Returns appropriate HTTP status codes and messages for errors and success.
  */
 const del = async (req, res) => {
-	console.log( req.user)
 	const { expenseId } = req.params;
 	if (!expenseId) return res.status(400).json({ status: 'error', error: 'Missing expense ID' });
 
@@ -116,11 +119,11 @@ const del = async (req, res) => {
 	if (!expense) return res.status(404).json({ status: 'error', error: 'Expense not found' });
 
 	// Check if the current user is the owner
-	if (expense.userId.toString() !== req.user._id.toString()) {
-		return res.status(403).json({ status: 'error', error: 'Forbidden' });
-	}
+	// if (expense.userId.toString() !== req.user._id.toString()) {
+	// 	return res.status(403).json({ status: 'error', error: 'Forbidden' });
+	// }
 
-	const result = await database().collection('expenses').deleteOne({ _id: new ObjectId(id) });
+	const result = await database().collection('expenses').deleteOne({ _id: new ObjectId(expenseId) });
 	if (result.deletedCount === 0) return res.status(404).json({ status: 'error', error: 'Expense not found' });
 
 	res.status(200).json({ status: 'success' });

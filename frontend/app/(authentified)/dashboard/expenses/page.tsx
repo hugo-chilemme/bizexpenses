@@ -21,26 +21,27 @@ export default function SalaryDashboard() {
 	useEffect(() => {
 		const fetchExpenses = async () => {
 			try {
-				const response = await ApiController("expenses", "GET");
+				const response = await ApiController("expenses", "GET", {
+					image: true,
+				});
 				setExpenses(response.items || []);
 
 
-				for (const item of response.items || []) {
-					const id = item._id;
-
-					const response = await ApiController(`expenses/${id}/image`, "GET");
-
-					if (!response || !response.image) {
-						console.warn(`No image found for expense with ID: ${id}`);
-						continue;
-					}
-
-					setExpenses((prevExpenses) =>
-						prevExpenses.map((expense) =>
-							expense._id === id ? { ...expense, data: { ...expense.data, image: response.image } } : expense
-						)
-					);
-				}
+				await Promise.all(
+					(response.items || []).map(async (item) => {
+						const id = item._id;
+						const imgResponse = await ApiController(`expenses/${id}/image`, "GET");
+						if (!imgResponse || !imgResponse.image) {
+							console.warn(`No image found for expense with ID: ${id}`);
+							return;
+						}
+						setExpenses((prevExpenses) =>
+							prevExpenses.map((expense) =>
+								expense._id === id ? { ...expense, data: { ...expense.data, image: imgResponse.image } } : expense
+							)
+						);
+					})
+				);
 
 
 			} catch (error) {

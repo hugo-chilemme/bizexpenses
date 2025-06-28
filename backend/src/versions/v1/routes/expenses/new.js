@@ -60,6 +60,25 @@ const post = async (req, res) => {
     // Analyse et insertion en base en arrière-plan
     nScale.analyzeImage(image)
       .then((data) => {
+        if (data.status === 'error') {
+          fs.unlink(filePath, (err) => {
+            if (err) {
+              console.error(`Failed to delete file ${filePath}:`, err);
+            }
+          });
+          return database().collection('expenses').updateOne(
+            { _id: row.insertedId },
+            {
+              $set: {
+                status: 'error',
+                data: data,
+                updatedAt: new Date(),
+              },
+            }
+          );
+        }
+
+
         return database().collection('expenses').updateOne(
           { _id: row.insertedId },
           {

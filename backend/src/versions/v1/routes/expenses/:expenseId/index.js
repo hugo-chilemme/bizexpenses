@@ -39,9 +39,9 @@ const get = async (req, res) => {
 		return res.status(404).json({ status: 'error', error: 'Expense not found' });
 	}
 
-	// if (expense.userId.toString() !== req.user._id.toString() && req.user.entreprise.role !== 'owner' && req.user.entreprise.role !== 'hr') {
-	// 	return res.status(403).json({ status: 'error', error: 'Forbidden' });
-	// }
+	if (expense.userId.toString() !== req.user._id.toString() && req.user.entreprise.role !== 'owner' && req.user.entreprise.role !== 'hr') {
+		return res.status(403).json({ status: 'error', error: 'Forbidden' });
+	}
 
 	if (!expense) {
 		return res.status(404).json({ status: 'error', error: 'Expense not found' });
@@ -82,9 +82,9 @@ const post = async (req, res) => {
 		return res.status(404).json({ status: 'error', error: 'Expense not found' });
 	}
 
-	// if (expenseData.userId.toString() !== req.user._id.toString() && req.user.entreprise.role !== 'owner' && req.user.entreprise.role !== 'hr') {
-	// 	return res.status(403).json({ status: 'error', error: 'Forbidden' });
-	// }
+	if (expenseData.userId.toString() !== req.user._id.toString() && req.user.entreprise.role !== 'owner' && req.user.entreprise.role !== 'hr') {
+		return res.status(403).json({ status: 'error', error: 'Forbidden' });
+	}
 
 	const result = await database().collection('expenses').updateOne(
 		{ _id: new ObjectId(expenseId) },
@@ -118,10 +118,9 @@ const del = async (req, res) => {
 	const expense = await database().collection('expenses').findOne({ _id: new ObjectId(expenseId) });
 	if (!expense) return res.status(404).json({ status: 'error', error: 'Expense not found' });
 
-	// Check if the current user is the owner
-	// if (expense.userId.toString() !== req.user._id.toString()) {
-	// 	return res.status(403).json({ status: 'error', error: 'Forbidden' });
-	// }
+	if (expense.userId.toString() !== req.user._id.toString()) {
+		return res.status(403).json({ status: 'error', error: 'Forbidden' });
+	}
 
 	const result = await database().collection('expenses').deleteOne({ _id: new ObjectId(expenseId) });
 	if (result.deletedCount === 0) return res.status(404).json({ status: 'error', error: 'Expense not found' });

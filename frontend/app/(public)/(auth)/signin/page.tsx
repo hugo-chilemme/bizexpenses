@@ -11,18 +11,8 @@ import { toast } from 'sonner';
 import ApiController from "@/lib/api-controller";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { getDeviceInfo } from "@/lib/utils";
 
-
-function generateUniqueDeviceId() {
-	if (typeof window === "undefined") return "unknown-device";
-	const deviceId = localStorage.getItem("deviceId");
-	if (deviceId) return deviceId;
-	const newDeviceId = btoa(
-		`${Date.now()}-${Math.random().toString(36).substring(2, 15)}`
-	);
-	localStorage.setItem("deviceId", newDeviceId);
-	return newDeviceId;
-}
 
 export default function Page() {
 	const router = useRouter();
@@ -58,9 +48,7 @@ export default function Page() {
 		setLoading(true);
 
 		// Collect user agent and locale info
-		const userAgent = typeof navigator !== "undefined" ? navigator.userAgent : "";
-		const language = typeof navigator !== "undefined" ? navigator.language : "";
-		const platform = typeof navigator !== "undefined" ? navigator.platform : "";
+		const { userAgent, platform, language, deviceId } = getDeviceInfo();
 
 		const response: any = await ApiController("signin", "POST", {
 			email,
@@ -68,7 +56,7 @@ export default function Page() {
 			userAgent,
 			language,
 			platform,
-			deviceId: generateUniqueDeviceId(),
+			deviceId
 		});
 
 		if (response.status === "error") {
@@ -85,15 +73,11 @@ export default function Page() {
 			localStorage.setItem("role", response.data.user.role);
 		}
 
-		setTimeout(() => {
-			setLoading(false);
-
-			if (!response.data.user.trusted) {
-				toast.info("Veuillez vérifier votre identité via l'email envoyé.");
-				return router.push(`/two-factor`);
-			}
-			router.push("/dashboard");
-		}, 1500);
+		if (!response.data.user.trusted) {
+			toast.info("Veuillez vérifier votre identité via l'email envoyé.");
+			return router.push(`/two-factor`);
+		}
+		router.push("/dashboard");
 	};
 
 	return (

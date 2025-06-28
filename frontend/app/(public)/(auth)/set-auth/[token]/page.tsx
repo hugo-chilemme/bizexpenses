@@ -25,9 +25,7 @@ export default function Create({params}: Readonly<{
 	const [userFirstName, setUserFirstName] = useState("");
 	const [uuid, setUuid] = useState("");
 
-	if (!token) {
-		return <div className="text-red-500">Aucun utilisateur trouvé</div>;
-	}
+
 
 
 	useEffect(() => {
@@ -81,6 +79,10 @@ export default function Create({params}: Readonly<{
 			setLoading(false);
 		}
 	};
+
+	if (!token) {
+		return <div className="text-red-500">Aucun utilisateur trouvé</div>;
+	}
 
 
 	if (loading)

@@ -15,6 +15,7 @@ import ApiController from "@/lib/api-controller";
 import { IoIosInformationCircle } from "react-icons/io";
 import { Input } from "@/components/ui/input";
 import { CATEGORIES } from "@/types/categories";
+import { GoChevronLeft } from "react-icons/go";
 import {
   Select,
   SelectContent,
@@ -84,7 +85,7 @@ export default function Page() {
 
 
 	const reset = async () => {
-		if (expense.id)
+		if (expense?.id)
 		{
 			ApiController(`expenses/${expense.id}`, 'DELETE');
 		}
@@ -129,11 +130,6 @@ export default function Page() {
 		setStep("upload");
 
 
-
-
-
-		
-
 		const response: any = await ApiController('expenses/new', 'POST', {
 			base64: base64
 		});
@@ -157,9 +153,20 @@ export default function Page() {
 				return;
 			}
 
+			if (statusResponse.data.status === "error") {
+				toast.error("Nous n'avons pas pu traiter votre note de frais. Veuillez vérifier le fichier et réessayer.");
+				clearInterval(interval);
+				setStep("upload-form");
+				history.pushState({}, '', '/dashboard/expenses/new');
+				reset();
+				return;
+			}
+
 			if (statusResponse.data.status !== "processed") {
 				return;
 			}
+
+
 			clearInterval(interval);
 
 			setStep("preform");
@@ -232,8 +239,18 @@ export default function Page() {
 
 	return (
 		<main className="h-full w-full flex flex-col p-8 lg:p-24 justify-start items-start">
+
+			
 			{step === "upload-form" && (
 				<section className="w-full flex flex-col items-start gap-8">
+					<div
+						className="flex gap-4 items-center font-semibold group cursor-pointer"
+						onClick={() => router.push('/dashboard')}
+					>
+						<GoChevronLeft className="w-6 h-6 cursor-pointer" />
+						<span className="group-hover:underline">Revenir en arrière</span>
+					</div>
+
 					<h1 className="text-3xl text-indigo-600 font-bold mt-8">Nouvelle note de frais</h1>
 					<div className="flex flex-col lg:flex-row gap-4 w-full">
 						<button
@@ -254,7 +271,7 @@ export default function Page() {
 							}}
 						>
 							<AiOutlineCloudUpload className="w-8 h-8 text-indigo-600" />
-							<span className="font-medium mt-6">
+							<span className="font-medium mt-6 text-neutral-700 text-sm">
 								Pour commencer, téléversez votre note de frais (ou glissez-la ici)
 							</span>
 							<input
@@ -283,14 +300,157 @@ export default function Page() {
 					<div className="flex-1">
 						{step !== "form" ? (
 							<motion.div
-								initial={{ opacity: 1, y: 0, height: "30vh" }}
-								animate={step === "form" ? { opacity: 0, y: 20, height: 0, margin: 0, padding: 0 } : { opacity: 1, y: 0, height: "30vh" }}
-								transition={{ duration: 0.4 }}
+								initial={{ opacity: 1, y: 0, height: "auto" }}
+								animate={
+									step === "form"
+										? { opacity: 0, y: 20, height: 0, margin: 0, padding: 0 }
+										: { opacity: 1, y: 0, height: "auto" }
+								}
+								transition={{
+									duration: 0.4,
+									staggerChildren: 0.12, // delay between children
+								}}
 								style={{ overflow: "hidden" }}
-								className="h-[30vh] border gap-4 bg-white rounded-xl flex flex-col items-center justify-center"
+								className=""
 							>
-								<Loader2 className="text-2xl animate-spin text-indigo-600" />
-								<p className="text-neutral-500 text-sm">Les données de votre note de frais sont en cours de traitement...</p>
+								{/* Skeleton blocks matching the actual form layout */}
+								<div className="w-full flex flex-col gap-6">
+									{/* Informations du commerçant */}
+									<motion.div
+										className="border gap-4 bg-white rounded-xl flex flex-col  justify-center p-8"
+										initial={{ opacity: 0, y: 10 }}
+										animate={{ opacity: 1, y: 0 }}
+										transition={{ delay: 0.05, duration: 0.4 }}
+									>
+										<div className="h-8 w-64 bg-neutral-200 rounded-lg mb-2 animate-pulse" />
+										<div className="flex gap-4 w-full">
+											<motion.div
+												className="flex-1"
+												initial={{ opacity: 0, y: 10 }}
+												animate={{ opacity: 1, y: 0 }}
+												transition={{ delay: 0.1, duration: 0.4 }}
+											>
+												<div className="h-3 w-32 bg-neutral-200 rounded mb-2 animate-pulse" />
+												<div className="h-8 w-full bg-neutral-100 rounded animate-pulse delay-500" />
+											</motion.div>
+											<motion.div
+												className="flex-1"
+												initial={{ opacity: 0, y: 10 }}
+												animate={{ opacity: 1, y: 0 }}
+												transition={{ delay: 0.15, duration: 0.4 }}
+											>
+												<div className="h-3 w-24 bg-neutral-200 rounded mb-2 animate-pulse" />
+												<div className="h-8 w-full bg-neutral-100 rounded animate-pulse delay-500" />
+											</motion.div>
+										</div>
+									</motion.div>
+									{/* Informations de la note de frais */}
+									<motion.div
+										className="border gap-4 bg-white rounded-xl flex flex-col  justify-center p-8"
+										initial={{ opacity: 0, y: 10 }}
+										animate={{ opacity: 1, y: 0 }}
+										transition={{ delay: 0.2, duration: 0.4 }}
+									>
+										<div className="h-8 mt-4 w-64 bg-neutral-200 rounded-lg mb-2 animate-pulse" />
+										<div className="flex gap-4 w-full">
+											<motion.div
+												className="flex-1"
+												initial={{ opacity: 0, y: 10 }}
+												animate={{ opacity: 1, y: 0 }}
+												transition={{ delay: 0.25, duration: 0.4 }}
+											>
+												<div className="h-3 w-20 bg-neutral-200 rounded mb-2 animate-pulse" />
+												<div className="h-8 w-full bg-neutral-100 rounded animate-pulse delay-500" />
+											</motion.div>
+											<motion.div
+												className="flex-1"
+												initial={{ opacity: 0, y: 10 }}
+												animate={{ opacity: 1, y: 0 }}
+												transition={{ delay: 0.3, duration: 0.4 }}
+											>
+												<div className="h-3 w-28 bg-neutral-200 rounded mb-2 animate-pulse" />
+												<div className="h-8 w-full bg-neutral-100 rounded animate-pulse delay-500" />
+											</motion.div>
+										</div>
+										<div className="flex gap-4 w-full">
+											<motion.div
+												className="flex-1"
+												initial={{ opacity: 0, y: 10 }}
+												animate={{ opacity: 1, y: 0 }}
+												transition={{ delay: 0.35, duration: 0.4 }}
+											>
+												<div className="h-3 w-20 bg-neutral-200 rounded mb-2 animate-pulse" />
+												<div className="h-8 w-full bg-neutral-100 rounded animate-pulse delay-500" />
+											</motion.div>
+											<motion.div
+												className="flex-1"
+												initial={{ opacity: 0, y: 10 }}
+												animate={{ opacity: 1, y: 0 }}
+												transition={{ delay: 0.4, duration: 0.4 }}
+											>
+												<div className="h-3 w-20 bg-neutral-200 rounded mb-2 animate-pulse" />
+												<div className="h-8 w-full bg-neutral-100 rounded animate-pulse delay-500" />
+											</motion.div>
+											<motion.div
+												className="flex-1"
+												initial={{ opacity: 0, y: 10 }}
+												animate={{ opacity: 1, y: 0 }}
+												transition={{ delay: 0.45, duration: 0.4 }}
+											>
+												<div className="h-3 w-20 bg-neutral-200 rounded mb-2 animate-pulse" />
+												<div className="h-8 w-full bg-neutral-100 rounded animate-pulse delay-500" />
+											</motion.div>
+										</div>
+									</motion.div>
+									{/* Détails de la note de frais */}
+									<motion.div
+										className="border gap-4 bg-white rounded-xl flex flex-col  justify-center p-8"
+										initial={{ opacity: 0, y: 10 }}
+										animate={{ opacity: 1, y: 0 }}
+										transition={{ delay: 0.5, duration: 0.4 }}
+									>
+										<div className="h-8 mt-4 w-64 bg-neutral-200 rounded-lg mb-2 animate-pulse" />
+										{/* Simulate 1 item row */}
+										<div className="flex gap-4 w-full">
+											<motion.div
+												className="flex-1"
+												initial={{ opacity: 0, y: 10 }}
+												animate={{ opacity: 1, y: 0 }}
+												transition={{ delay: 0.55, duration: 0.4 }}
+											>
+												<div className="h-3 w-16 bg-neutral-200 rounded mb-2 animate-pulse" />
+												<div className="h-8 w-full bg-neutral-100 rounded animate-pulse delay-500" />
+											</motion.div>
+											<motion.div
+												className="flex-1"
+												initial={{ opacity: 0, y: 10 }}
+												animate={{ opacity: 1, y: 0 }}
+												transition={{ delay: 0.6, duration: 0.4 }}
+											>
+												<div className="h-3 w-16 bg-neutral-200 rounded mb-2 animate-pulse" />
+												<div className="h-8 w-full bg-neutral-100 rounded animate-pulse delay-500" />
+											</motion.div>
+											<motion.div
+												className="flex-1"
+												initial={{ opacity: 0, y: 10 }}
+												animate={{ opacity: 1, y: 0 }}
+												transition={{ delay: 0.65, duration: 0.4 }}
+											>
+												<div className="h-3 w-16 bg-neutral-200 rounded mb-2 animate-pulse" />
+												<div className="h-8 w-full bg-neutral-100 rounded animate-pulse delay-500" />
+											</motion.div>
+											<motion.div
+												className="flex-1"
+												initial={{ opacity: 0, y: 10 }}
+												animate={{ opacity: 1, y: 0 }}
+												transition={{ delay: 0.7, duration: 0.4 }}
+											>
+												<div className="h-3 w-20 bg-neutral-200 rounded mb-2 animate-pulse" />
+												<div className="h-8 w-full bg-neutral-100 rounded animate-pulse delay-500" />
+											</motion.div>
+										</div>
+									</motion.div>
+								</div>
 							</motion.div>
 						) : (
 							<div className="flex flex-col gap-6">
@@ -543,6 +703,7 @@ export default function Page() {
 					</div>
 					<div className="w-1/3 pt-0 flex flex-col gap-4">
 						{ step !== "form" && (
+							<>
 							<div className="bg-white shadow-sm rounded-xl border flex flex-col gap-4 py-4">
 								<div className="flex items-center gap-4 px-6">
 									<div className="w-6 flex items-center justify-center">
@@ -620,6 +781,19 @@ export default function Page() {
 								</div>
 
 							</div>
+								<motion.div
+										className="border gap-4 bg-white rounded-xl flex flex-col  justify-center p-8"
+										initial={{ opacity: 0, y: 10 }}
+										animate={{ opacity: 1, y: 0 }}
+										transition={{ delay: 0.5, duration: 0.4 }}
+									>
+										<div className="h-8 w-full bg-neutral-200 rounded-lg animate-pulse" />
+										{/* Simulate paragraph */}
+										<div className="h-4 w-3/4 bg-neutral-200 rounded animate-pulse" />
+										<div className="h-4 w-1/2 bg-neutral-200 rounded animate-pulse" />
+										
+								</motion.div>
+							</>
 						)}
 
 						{step=== "form" && (

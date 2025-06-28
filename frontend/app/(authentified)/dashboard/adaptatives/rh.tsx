@@ -20,7 +20,7 @@ export default function SalaryDashboard() {
 	useEffect(() => {
 		const fetchExpenses = async () => {
 			try {
-				const response = await ApiController("expenses", "GET");
+				const response: any = await ApiController("expenses", "GET", { status: 'all'});
 				setExpenses(response.items || []);
 			} catch (error) {
 				console.error("Error fetching expenses:", error);
@@ -73,19 +73,12 @@ export default function SalaryDashboard() {
 					)}
 					<p className="text-neutral-700 text-balance">Passez ce délai, reportez les notes de frais au mois suivant.</p>
 				</div>
-				<div className="flex-1 flex flex-col gap-4 max-w-md bg-indigo-100/50 p-6 rounded-2xl">
-					<TfiTicket className="w-8 h-8 text-indigo-600" />
-					<h2 className="text-lg text-indigo-600 font-semibold">Soumettez vos notes de frais</h2>
-					<p className="text-neutral-700 text-balance">Vous pouvez soumettre vos notes de frais pour le mois en cours.</p>
-					<Link href="/dashboard/expenses/new" className="text-white p-2 rounded-lg flex items-center justify-center gap-2 bg-indigo-500 text-center font-semibold hover:bg-indigo-600 transition-colors">
-						Envoyer mes notes de frais <LuChevronRight className="inline-block w-4 h-4" />
-					</Link>
-				</div>
+				
 			</div>
 
 			<div className="mt-12 w-full">
 				<div className="flex justify-between items-center mb-8">
-					<h2 className="text-lg text-indigo-600 font-semibold">Vos dernières notes de frais</h2>
+					<h2 className="text-lg text-indigo-600 font-semibold">Dernières notes de frais</h2>
 					<Link
 						href="/dashboard/expenses"
 						className="flex items-center font-medium justify-center gap-2 text-center text-indigo-600 hover:underline"

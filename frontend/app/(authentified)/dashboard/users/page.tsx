@@ -114,7 +114,7 @@ export default function AdminDashboard() {
 										<td className="py-3 px-4">{emp.firstName} {emp.lastName}</td>
 										<td className="py-3 px-4">{emp.email}</td>
 										<td className="py-3 px-4">
-											{user.entreprise.role === "owner" ? (
+											{user.entreprise.role === "owner" && emp.role !== "owner" ? (
 											<Select
 												value={emp.role}
 												onValueChange={async (value) => {
@@ -159,7 +159,7 @@ export default function AdminDashboard() {
 														<SelectLabel>Rôle</SelectLabel>
 														<SelectItem value="user" disabled={emp.role === "user"}>Salary</SelectItem>
 														<SelectItem value="hr" disabled={emp.role === "hr"}>Human Resource</SelectItem>
-														<SelectItem value="owner" disabled={emp.role === "owner"}>Director Human Resources</SelectItem>
+														<SelectItem value="owner" disabled={true}>Director Human Resources</SelectItem>
 													</SelectGroup>
 												</SelectContent>
 											</Select>

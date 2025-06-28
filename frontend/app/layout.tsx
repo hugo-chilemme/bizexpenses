@@ -11,8 +11,8 @@ const fontSans = FontSans({
   variable: "--font-sans",
 });
 export const metadata: Metadata = {
-  title: "Magic UI",
-  description: "The startup template from Magic UI",
+  title: "BizExpenses - Manage your expenses with ease",
+  description: "BizExpenses is a modern expense management application designed to simplify the process of tracking and managing business expenses.",
 };
 
 export default function RootLayout({
@@ -21,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="fr" suppressHydrationWarning>
       <body
         className={cn(
           "min-h-screen bg-gray-100 font-sans antialiased",

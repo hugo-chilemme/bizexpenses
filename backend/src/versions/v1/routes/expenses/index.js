@@ -42,12 +42,12 @@ const get = async (req, res) => {
 		}));
 	};
 
-	if (status && ['preparing', 'pending', 'accepted', 'rejected', 'all'].includes(status)) {
+	if (status && ['preparing', 'pending', 'approved', 'rejected', 'all'].includes(status)) {
 		if (req.user.entreprise.role === "user")
 			return res.status(403).json({ status: 'error', error: 'Forbidden' });
 		let items;
 		if (status === 'all' && req.user.entreprise.role !== "user") {
-			items = await database().collection('expenses').find({ status: { $in: ['pending', 'accepted', 'rejected'] } }).toArray();
+			items = await database().collection('expenses').find({ status: { $in: ['pending', 'approved', 'rejected'] } }).toArray();
 		} else {
 			items = await database().collection('expenses').find({ userId: new ObjectId(req.user._id), status }).toArray();
 		}

@@ -41,9 +41,6 @@ export default function Header() {
 							</DropdownMenuTrigger>
 							<DropdownMenuContent>
 								<DropdownMenuItem>
-									<Link href="/dashboard/profile">Profil</Link>
-								</DropdownMenuItem>
-								<DropdownMenuItem>
 									<Link href="/dashboard/settings">Paramètres</Link>
 								</DropdownMenuItem>
 								<DropdownMenuSeparator />

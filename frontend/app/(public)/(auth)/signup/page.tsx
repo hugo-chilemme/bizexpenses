@@ -99,11 +99,11 @@ export default function Page() {
 		toast.success("Inscription réussie !");
 
 
-                localStorage.setItem("authorization", response.authorization);
-                localStorage.setItem("uuid", response.user.uuid);
-                if (response.user.role) {
-                        localStorage.setItem("role", response.user.role);
-                }
+		localStorage.setItem("authorization", response.authorization);
+		localStorage.setItem("uuid", response.user.uuid);
+		if (response.user.role) {
+				localStorage.setItem("role", response.user.role);
+		}
 
 		router.push(`/dashboard`);
 	};
@@ -176,7 +176,7 @@ export default function Page() {
 									disabled={loading}
 									autoFocus
 								>
-									<option value="">Taille de l'entreprise</option>
+									<option value="">Taille de l&apos;entreprise</option>
 									{companySizes.map((size) => (
 										<option key={size} value={size}>{size} employés</option>
 									))}

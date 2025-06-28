@@ -196,7 +196,7 @@ export default function Page() {
 	const recalculateTTC = () => {
 		setExpenseData((prev: any) => {
 			const newTotalHT = prev.total_ht.value;
-			const newTotalTVA = prev.total_vat.value;
+			const newTotalTVA = prev.total_tva.value;
 			const newTotalTTC = parseFloat(newTotalHT) + parseFloat(newTotalTVA);
 			return {
 				...prev,
@@ -299,7 +299,7 @@ export default function Page() {
 									<h3 className="font-semibold text-sm">Informations du commerçant</h3>
 									<div className="flex justify-between items-center gap-4">
 										<div className="flex flex-col flex-1 gap-2">
-											<label className="text-xs">Nom de l'entreprise</label>
+											<label className="text-xs">Nom de l&apos;entreprise</label>
 											<Input
 												type="text"
 												onChange={(e) =>
@@ -414,12 +414,12 @@ export default function Page() {
 												onChange={(e) => {
 													setExpenseData((prev: any) => ({
 														...prev,
-														total_vat: { ...prev.total_vat, value: e.target.value, error: false }
+														total_tva: { ...prev.total_tva, value: e.target.value, error: false }
 													}));
 													recalculateTTC();
 												}}
 												placeholder="Total TVA"
-												value={expenseData.total_vat?.value?.toFixed ? expenseData.total_vat.value.toFixed(2) : expenseData.total_vat?.value || ""}
+												value={expenseData.total_tva?.value?.toFixed ? expenseData.total_tva.value.toFixed(2) : expenseData.total_tva?.value || ""}
 												className="border rounded-lg p-2 text-sm w-full"
 											/>
 										</div>
@@ -430,8 +430,8 @@ export default function Page() {
 												disabled
 												placeholder="Total TTC"
 												value={
-													(expenseData.total_ht?.value && expenseData.total_vat?.value)
-														? (parseFloat(expenseData.total_ht.value) + parseFloat(expenseData.total_vat.value)).toFixed(2) + " €"
+													(expenseData.total_ht?.value && expenseData.total_tva?.value)
+														? (parseFloat(expenseData.total_ht.value) + parseFloat(expenseData.total_tva.value)).toFixed(2) + " €"
 														: ""
 												}
 												className="border rounded-lg p-2 text-sm w-full bg-neutral-200 text-black cursor-not-allowed"
@@ -629,7 +629,7 @@ export default function Page() {
 								<h3 className="font-semibold text-sm">Récapitulatif de la note de frais</h3>
 								<div className="flex flex-col gap-2">
 									<div className="flex justify-between items-center">
-										<span className="text-xs text-neutral-500">Nom de l'entreprise</span>
+										<span className="text-xs text-neutral-500">Nom de l&apos;entreprise</span>
 										<span className="text-sm text-neutral-800">{expenseData.company_name?.value || "Non renseigné"}</span>
 									</div>
 									<div className="flex justify-between items-center">
@@ -643,8 +643,8 @@ export default function Page() {
 									<div className="flex justify-between items-center">
 										<span className="text-xs text-neutral-500">Total TVA</span>
 										<span className="text-sm text-neutral-800">
-											{expenseData.total_vat?.value
-												? parseFloat(expenseData.total_vat.value).toFixed(2) + " €"
+											{expenseData.total_tva?.value
+												? parseFloat(expenseData.total_tva.value).toFixed(2) + " €"
 												: "Non renseigné"}
 										</span>
 									</div>
@@ -726,8 +726,8 @@ export default function Page() {
 															case "total_price":
 																errorMessages.push(`Veuillez renseigner le total de l'article #${idx + 1}.`);
 																break;
-															case "vat_rate":
-																errorMessages.push(`Veuillez renseigner le taux de TVA de l'article #${idx + 1}.`);
+															case "total_tva":
+																errorMessages.push(`Veuillez renseigner le total de TVA de l'article #${idx + 1}.`);
 																break;
 															case "vat_amount":
 																errorMessages.push(`Veuillez renseigner le montant de TVA de l'article #${idx + 1}.`);
@@ -830,7 +830,7 @@ export default function Page() {
 							</div>
 							<div className="bg-white shadow-sm rounded-xl border flex flex-col gap-4 p-4">
 								<p className="text-neutral-500 text-xs">
-									L'image que vous avez téléversée sera transmise à votre comptable pour vérification et archivage.{" "}
+									L&apos;image que vous avez téléversée sera transmise à votre comptable pour vérification et archivage.{" "}
 									<span className="text-xs text-indigo-500 hover:underline cursor-pointer" onClick={() => {
 									// display in browser tab
 									if (file && file.blobUrl) {

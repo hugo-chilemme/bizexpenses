@@ -24,7 +24,17 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { GoChevronLeft } from "react-icons/go";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 /*
 example of expenseData data;
   "company_name": { "value": "Hiboutik", "error": false },
@@ -878,14 +888,31 @@ export default function Page({params}) {
 												)}
 												Soumettre la note de frais
 											</Button>
-											<Button
-												variant="outline"
-												className="mt-2 w-full"
-												onClick={reset}
-											>
-												Supprimer définitivement
-											</Button>
-										</>	
+											<AlertDialog>
+      											<AlertDialogTrigger asChild>
+													<Button
+														variant="outline"
+														className="mt-2 w-full"
+													>
+														Supprimer définitivement
+													</Button>
+	  											</AlertDialogTrigger>
+	  											<AlertDialogContent>
+	  												<AlertDialogHeader>
+	  													<AlertDialogTitle>Supprimer la note de frais</AlertDialogTitle>
+	  													<AlertDialogDescription>
+	  														Êtes-vous sûr de vouloir supprimer cette note de frais ? Cette action est irréversible.
+	  													</AlertDialogDescription>
+	  												</AlertDialogHeader>
+	  												<AlertDialogFooter>
+	  													<AlertDialogCancel>Annuler</AlertDialogCancel>
+														<AlertDialogAction asChild>
+															<Button onClick={reset}>Confirmer</Button>
+														</AlertDialogAction>
+	  												</AlertDialogFooter>
+	  											</AlertDialogContent>
+											</AlertDialog>
+										</>
 									) : (
 										<>
 											<div className="flex justify-between items-center">
@@ -918,7 +945,7 @@ export default function Page({params}) {
 												</span>
 											</div>
 
-											{user._id === expense.userId && expense.status === "pending" ? (
+											{user._id === expense.userId && expense.status === "pending" && user.entreprise.role === "user" ? (
 												<>
 													<Button 
 														className="mt-2 w-full shadow-none bg-neutral-100 hover:bg-neutral-200 text-neutral-600"
@@ -926,13 +953,31 @@ export default function Page({params}) {
 													>
 														Modifier la note de frais
 													</Button>
-													<Button
-														variant="outline"
-														className="mt-2 w-full"
-														onClick={reset}
-													>
-														Supprimer définitivement
-													</Button>
+													<AlertDialog>
+														<AlertDialogTrigger asChild>
+															<Button
+																variant="outline"
+																className="mt-2 w-full"
+															>
+																Supprimer définitivement
+															</Button>
+														</AlertDialogTrigger>
+														<AlertDialogContent>
+															<AlertDialogHeader>
+																<AlertDialogTitle>Annuler la note de frais</AlertDialogTitle>
+																<AlertDialogDescription>
+																	Êtes-vous sûr de vouloir annuler cette note de frais ? Vous pourrez la recréer plus tard.
+																</AlertDialogDescription>
+															</AlertDialogHeader>
+															<AlertDialogFooter>
+																<AlertDialogCancel>Annuler</AlertDialogCancel>
+																<AlertDialogAction asChild>
+																	<Button onClick={reset}>Confirmer</Button>
+																</AlertDialogAction>
+															</AlertDialogFooter>
+														</AlertDialogContent>
+													</AlertDialog>
+	
 												</>
 											) : (
 												<>

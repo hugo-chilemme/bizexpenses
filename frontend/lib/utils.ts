@@ -12,3 +12,25 @@ export function isMobile() {
   const isSmallScreen = window.innerWidth <= 768;
   return isMobileDevice || isSmallScreen;
 }
+
+
+export function generateUniqueDeviceId() {
+	if (typeof window === "undefined") return "unknown-device";
+	const deviceId = localStorage.getItem("deviceId");
+	if (deviceId) return deviceId;
+	const newDeviceId = btoa(
+		`${Date.now()}-${Math.random().toString(36).substring(2, 15)}`
+	);
+	localStorage.setItem("deviceId", newDeviceId);
+	return newDeviceId;
+}
+
+export function getDeviceInfo() {
+  if (typeof navigator === "undefined") return {};
+  return {
+    userAgent: navigator.userAgent,
+    platform: navigator.platform,
+    language: navigator.language,
+    deviceId: generateUniqueDeviceId(),
+  };
+}

@@ -19,4 +19,4 @@ if (!process.env.MONGODB_DB) {
 
 const init = () => client.db(process.env.MONGODB_DB);
 
-module.exports = init ;
+module.exports = init;

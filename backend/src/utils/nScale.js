@@ -10,8 +10,6 @@ const prompt = `Récupère toutes les informations pertinentes du ticket de cais
 	- Quantité
 	- Prix unitaire
 	- Prix total de l'article
-	- Taux de TVA appliqué (si présent)
-	- Montant de la TVA (si présent)
 	- Catégorie de l'article (choisir parmi : 	"Transports",
 	"Restauration",
 	"Hotel",

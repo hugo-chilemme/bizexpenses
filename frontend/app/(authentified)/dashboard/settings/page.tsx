@@ -99,7 +99,7 @@ const AccountSettingsPage = () => {
 				<h3 className="mb-8">Supprimer mon compte</h3>
 				<p className="text-sm text-gray-500 mb-4">
 					Attention, cette action est irréversible. Si vous supprimez votre compte, toutes vos données seront perdues.<br/>
-					Vous devrez contacter votre administrateur pour réactiver votre compte si vous changez d'avis.
+					Vous devrez contacter votre administrateur pour réactiver votre compte si vous changez d&apos;avis.
 				</p>
 				<AlertDialog>
 					<AlertDialogTrigger className="bg-red-500 border border-red-500 text-sm text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors">
@@ -113,7 +113,7 @@ const AccountSettingsPage = () => {
 
 								<Input type="password" placeholder="Entrez votre mot de passe pour confirmer" className="mt-4" value={password} onChange={(e) => setPassword(e.target.value)} disabled={loading} />
 								<br />
-								En supprimant votre compte, vous perdrez toutes vos données et ne pourrez plus accéder à votre compte. Si vous changez d'avis, vous devrez contacter votre administrateur pour recréer votre compte.
+								En supprimant votre compte, vous perdrez toutes vos données et ne pourrez plus accéder à votre compte. Si vous changez d&apos;avis, vous devrez contacter votre administrateur pour recréer votre compte.
 							</AlertDialogDescription>
 						</AlertDialogHeader>
 						<AlertDialogFooter>

@@ -272,6 +272,25 @@ export default function Page({params}) {
 
 	}, [])
 
+
+	async function handleUpdateStatus(status: "pending" | "processed") {
+		const response: any = await ApiController(`expenses/${expense._id}/status`, 'PUT', {
+			status: status,
+		});
+
+		if (response.status === "error") {
+			toast.error(response.error || "Une erreur est survenue lors de la mise à jour du statut de la note de frais.");
+			return;
+		}
+
+		setExpense((prev: any) => ({
+			...prev,
+			status: status,
+		}));
+	}
+
+	const isDisabled = () => ["pending", "approved", "rejected"].includes(expense?.status || "");
+
 	return (
 		<main className="h-full w-full flex flex-col p-8 lg:p-24 justify-start items-start">
 			<div
@@ -359,14 +378,14 @@ export default function Page({params}) {
 									<h3 className="font-semibold text-sm">Informations du commerçant</h3>
 									<div className="flex justify-between items-center gap-4">
 										<div className="flex flex-col flex-1 gap-2">
-											<label className="text-xs">Nom de l'entreprise</label>
+											<label className="text-xs">Nom de l&apos;entreprise</label>
 											<Input
 												type="text"
 												placeholder="Nom de l'entreprise"
-												disabled={expense.status === "pending"}
+												disabled={isDisabled()}
 												value={expenseData.company_name?.value || ""}
 												className={cn("border rounded-lg p-2 text-sm w-full", {
-													"bg-neutral-200 text-black cursor-not-allowed": expense.status === "pending",
+													"bg-neutral-200 text-black cursor-not-allowed": isDisabled(),
 												})}
 											/>
 										</div>
@@ -374,11 +393,11 @@ export default function Page({params}) {
 											<label className="text-xs">Adresse</label>
 											<Input
 												type="text"
-												disabled={expense.status === "pending"}
+												disabled={isDisabled()}
 												placeholder="Adresse de l'entreprise"
 												value={expenseData.company_address?.value || ""}
 												className={cn("border rounded-lg p-2 text-sm w-full", {
-													"bg-neutral-200 text-black cursor-not-allowed": expense.status === "pending",
+													"bg-neutral-200 text-black cursor-not-allowed": isDisabled(),
 												})}
 											/>
 										</div>
@@ -394,18 +413,18 @@ export default function Page({params}) {
 											<Input
 												type="date"
 												onChange={(e) => {
-													if (expense.status === "pending") return;
+													if (isDisabled()) return;
 													const newDate = e.target.value;
 													setExpenseData((prev: any) => ({
 														...prev,
 														date: { ...prev.date, value: newDate, error: false },
 													}));
 												}}
-												disabled={expense.status === "pending"}
+												disabled={isDisabled()}
 												placeholder="Date de la note de frais"
 												value={expenseData.date?.value || ""}
 												className={cn("border rounded-lg p-2 text-sm w-full", {
-													"bg-neutral-200 text-black cursor-not-allowed": expense.status === "pending",
+													"bg-neutral-200 text-black cursor-not-allowed": isDisabled(),
 												})}
 											/>
 										</div>
@@ -413,10 +432,10 @@ export default function Page({params}) {
 											<label className="text-xs">Moyen de paiement</label>
 											<Select
 												value={expenseData.payment_method?.value || ""}
-												disabled={expense.status === "pending"}
+												disabled={isDisabled()}
 												placeholder="Sélectionner un moyen de paiement"
 												onValueChange={(value) => {
-													if (expense.status === "pending") return;
+													if (isDisabled()) return;
 													setExpenseData((prev: any) => ({
 														...prev,
 														payment_method: { ...prev.payment_method, value, error: false },
@@ -441,7 +460,7 @@ export default function Page({params}) {
 											<label className="text-xs">Total HT</label>
 											<Input
 												onChange={(e) => {
-													if (expense.status === "pending") return;
+													if (isDisabled()) return;
 													const newTotalHT = e.target.value;
 													setExpenseData((prev: any) => ({
 														...prev,
@@ -449,11 +468,11 @@ export default function Page({params}) {
 													}));
 												}}
 												type="text"
-												disabled={expense.status === "pending"}
+												disabled={isDisabled()}
 												placeholder="Total HT"
 												value={expenseData.total_ht?.value?.toFixed ? expenseData.total_ht.value.toFixed(2) : expenseData.total_ht?.value || ""}
 												className={cn("border rounded-lg p-2 text-sm w-full", {
-													"bg-neutral-200 text-black cursor-not-allowed": expense.status === "pending",
+													"bg-neutral-200 text-black cursor-not-allowed": isDisabled(),
 												})}
 											/>
 										</div>
@@ -461,7 +480,7 @@ export default function Page({params}) {
 											<label className="text-xs">Total TVA</label>
 											<Input
 												onChange={(e) => {
-													if (expense.status === "pending") return;
+													if (isDisabled()) return;
 													const newTotalVAT = e.target.value;
 													setExpenseData((prev: any) => ({
 														...prev,
@@ -470,12 +489,12 @@ export default function Page({params}) {
 													recalculateTTC();
 												}}
 												type="text"
-												disabled={expense.status === "pending"}
+												disabled={isDisabled()}
 												
 												placeholder="Total TVA"
 												value={expenseData.total_vat?.value?.toFixed ? expenseData.total_vat.value.toFixed(2) : expenseData.total_vat?.value || ""}
 												className={cn("border rounded-lg p-2 text-sm w-full", {
-													"bg-neutral-200 text-black cursor-not-allowed": expense.status === "pending",
+													"bg-neutral-200 text-black cursor-not-allowed": isDisabled(),
 												})}
 											/>
 										</div>
@@ -483,7 +502,7 @@ export default function Page({params}) {
 											<label className="text-xs">Total TTC</label>
 											<Input
 												onChange={(e) => {
-													if (expense.status === "pending") return;
+													if (isDisabled()) return;
 													const newTotalTTC = e.target.value;
 													setExpenseData((prev: any) => ({
 														...prev,
@@ -491,7 +510,7 @@ export default function Page({params}) {
 													}));
 												}}
 												type="text"
-												disabled={expense.status === "pending"}
+												disabled={isDisabled()}
 												placeholder="Total TTC"
 
 												value={
@@ -500,7 +519,7 @@ export default function Page({params}) {
 														: ""
 												}
 												className={cn("border rounded-lg p-2 text-sm w-full", {
-													"bg-neutral-200 text-black cursor-not-allowed": expense.status === "pending",
+													"bg-neutral-200 text-black cursor-not-allowed": isDisabled(),
 												})}
 											/>
 										</div>
@@ -515,7 +534,7 @@ export default function Page({params}) {
 													<label className="text-xs">Nom</label>
 													<Input
 														onChange={(e) => {
-															if (expense.status === "pending") return;
+															if (isDisabled()) return;
 															const newName = e.target.value;
 															setExpenseData((prev: any) => {
 																const newItems = [...prev.items];
@@ -524,11 +543,11 @@ export default function Page({params}) {
 															});
 														}}
 														type="text"
-														disabled={expense.status === "pending"}
+														disabled={isDisabled()}
 														placeholder="Nom de l'article"
 														value={item.name?.value || ""}
 														className={cn("border rounded-lg p-2 text-sm w-full", {
-															"bg-neutral-200 text-black cursor-not-allowed": expense.status === "pending",
+															"bg-neutral-200 text-black cursor-not-allowed": isDisabled(),
 														})}
 													/>
 												</div>
@@ -536,7 +555,7 @@ export default function Page({params}) {
 													<label className="text-xs">Quantité</label>
 													<Input
 														onChange={(e) => {
-															if (expense.status === "pending") return;
+															if (isDisabled()) return;
 															const newQuantity = e.target.value;
 															setExpenseData((prev: any) => {
 																const newItems = [...prev.items];
@@ -545,12 +564,12 @@ export default function Page({params}) {
 															});
 														}}
 														type="number"
-														disabled={expense.status === "pending"}
+														disabled={isDisabled()}
 														
 														placeholder="Quantité"
 														value={item.quantity?.value || ""}
 														className={cn("border rounded-lg p-2 text-sm w-full", {
-															"bg-neutral-200 text-black cursor-not-allowed": expense.status === "pending",
+															"bg-neutral-200 text-black cursor-not-allowed": isDisabled(),
 														})}
 													/>
 												</div>
@@ -558,7 +577,7 @@ export default function Page({params}) {
 													<label className="text-xs">Total</label>
 													<Input
 														onChange={(e) => {
-															if (expense.status === "pending") return;
+															if (isDisabled()) return;
 															const newTotalPrice = e.target.value;
 															setExpenseData((prev: any) => {
 																const newItems = [...prev.items];
@@ -567,11 +586,11 @@ export default function Page({params}) {
 															});
 														}}
 														type="number"
-														disabled={expense.status === "pending"}
+														disabled={isDisabled()}
 														placeholder="Total"
 														value={item.total_price?.value || ""}
 														className={cn("border rounded-lg p-2 text-sm w-full", {
-															"bg-neutral-200 text-black cursor-not-allowed": expense.status === "pending",
+															"bg-neutral-200 text-black cursor-not-allowed": isDisabled(),
 														})}
 													/>
 												</div>
@@ -580,7 +599,7 @@ export default function Page({params}) {
 													<label className="text-xs">Catégorie</label>
 													<Select
 														onValueChange={(value) => {
-															if (expense.status === "pending") return;
+															if (isDisabled()) return;
 															setExpenseData((prev: any) => {
 																const newItems = [...prev.items];
 																newItems[index] = { ...newItems[index], category: { value, error: false } };
@@ -588,7 +607,7 @@ export default function Page({params}) {
 															});
 														}}
 														value={item.category?.value || ""}
-														disabled={expense.status === "pending"}
+														disabled={isDisabled()}
 														placeholder="Sélectionner une catégorie"
 													>
 														<SelectTrigger>
@@ -703,7 +722,7 @@ export default function Page({params}) {
 								<h3 className="font-semibold text-sm">Récapitulatif de la note de frais</h3>
 								<div className="flex flex-col gap-2">
 									<div className="flex justify-between items-center">
-										<span className="text-xs text-neutral-500">Nom de l'entreprise</span>
+										<span className="text-xs text-neutral-500">Nom de l&apos;entreprise</span>
 										<span className="text-sm text-neutral-800">{expenseData.company_name?.value || "Non renseigné"}</span>
 									</div>
 									<div className="flex justify-between items-center">
@@ -898,19 +917,44 @@ export default function Page({params}) {
 													)}
 												</span>
 											</div>
-											<Button 
-												className="mt-2 w-full shadow-none bg-neutral-100 hover:bg-neutral-200 text-neutral-600"
-												onClick={handleEdit}
-											>
-												Modifier la note de frais
-											</Button>
-											<Button
-												variant="outline"
-												className="mt-2 w-full"
-												onClick={reset}
-											>
-												Supprimer définitivement
-											</Button>
+
+											{user._id === expense.userId && expense.status === "pending" ? (
+												<>
+													<Button 
+														className="mt-2 w-full shadow-none bg-neutral-100 hover:bg-neutral-200 text-neutral-600"
+														onClick={handleEdit}
+													>
+														Modifier la note de frais
+													</Button>
+													<Button
+														variant="outline"
+														className="mt-2 w-full"
+														onClick={reset}
+													>
+														Supprimer définitivement
+													</Button>
+												</>
+											) : (
+												<>
+													{expense.status === "pending" && (
+														<div className="flex items-center gap-4">
+															<Button 
+																className="mt-2 w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+																onClick={() => handleUpdateStatus("approved")}
+															>
+																Valider
+															</Button>
+															<Button
+																variant="outline"
+																className="mt-2 w-full"
+																onClick={() => handleUpdateStatus("rejected")}
+															>
+																Rejeter
+															</Button>
+														</div>
+													)}
+												</>
+											)}
 										</>
 									)}
 
@@ -920,7 +964,7 @@ export default function Page({params}) {
 							</div>
 							<div className="bg-white shadow-sm rounded-xl border flex flex-col gap-4 p-4">
 								<p className="text-neutral-500 text-xs">
-									L'image que vous avez téléversée sera transmise à votre comptable pour vérification et archivage.
+									L&apos;image que vous avez téléversée sera transmise à votre comptable pour vérification et archivage.
 								</p>
 								<motion.div
 									initial={false}

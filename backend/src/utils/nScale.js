@@ -22,12 +22,7 @@ const prompt = `Récupère toutes les informations pertinentes du ticket de cais
 - Moyen de paiement (si présent)
 Pour chaque champ, ajoute un champ "error": true ou false pour indiquer si l'information a été trouvée ou non.
 Si une information n'est pas présente, laisse le champ vide et mets "error": true.
-Si ce n'est pas un ticket de caisse, retourne un json avec la raison de l'erreur dans le champ "error" et "error": true.
-Vocii le format d'erruer attendu :
-{
-  "error": "This document is not a receipt or contains insufficient information.",
-  "status": "error"
-}
+
 Réponds uniquement au format JSON sans bloc de code, par exemple :
 {
   "company_name": { "value": "Supermarché Paris Centre", "error": false },
@@ -54,7 +49,16 @@ Réponds uniquement au format JSON sans bloc de code, par exemple :
   ],
   "total_ttc": { "value": 3.48, "error": false },
   "payment_method": { "value": "Carte bancaire", "error": false }
-}`;
+}
+  
+Si ce n'est pas un ticket de caisse, retourne un json avec la raison de l'erreur dans le champ "error" et "error": true.
+Vocii le format d'erruer attendu :
+{
+  "error": "This document is not a receipt or contains insufficient information.",
+  "status": "error"
+} 
+Ne prend pas de risque, si tu n'es pas sûr de quelque chose, mets "error": true et laisse le champ vide.
+  `;
 
 async function analyzeImage(base64Image) {
     const client = new OpenAI({

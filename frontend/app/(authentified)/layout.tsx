@@ -103,19 +103,13 @@ export default function Layout({
 			<RenderLink
 				href="/expenses/pending"
 				icon={<IoFastFoodOutline className="w-6 h-6" />}
-				label="Notes de frais en attente"
+				label="Notes de frais"
 				onClick={() => setMobileMenuOpen(false)}
 			/>
 			<RenderLink
 				href="/users"
 				icon={<FaUsers className="w-6 h-6" />}
 				label="Gestion des employés"	
-				onClick={() => setMobileMenuOpen(false)}
-			/>
-			<RenderLink
-				href="/expenses"
-				icon={<FaUtensils className="w-6 h-6" />}
-				label="Mes notes de frais"
 				onClick={() => setMobileMenuOpen(false)}
 			/>
 			<RenderLink
@@ -184,7 +178,7 @@ export default function Layout({
 				<DropdownMenuSeparator />
 				<DropdownMenuGroup>
 					<DropdownMenuItem asChild>
-						<Link href="/settings">
+						<Link href="/dashboard/settings">
 							Paramètres
 						</Link>
 					</DropdownMenuItem>

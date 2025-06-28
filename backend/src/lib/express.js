@@ -8,8 +8,15 @@ const app = express();
 const PORT = process.env.PORT || 3003;
 
 
+if (!process.env.DOMAIN) {
+    console.error('DOMAIN is not set in the environment variables');
+    process.exit(1);
+}
+
 // allow all cors
-app.use(cors());
+app.use(cors({
+    origin: process.env.DOMAIN,
+}));
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
 

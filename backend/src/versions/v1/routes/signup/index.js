@@ -23,13 +23,13 @@ const config = {
  * - Checks if the user already exists in the database.
  */
 const post = async (req, res) => {
-	const { firstName, lastName, email, companyName, companySize, password } = req.body;
+	const { firstName, lastName, email, companyName, companySize, password, userAgent, platform, language, deviceId } = req.body;
 
 	// Validation
-	if (![firstName, lastName, email, companyName, companySize, password].every(Boolean)) {
+	if (![firstName, lastName, email, companyName, companySize, password, userAgent, platform, language, deviceId].every(Boolean)) {
 		return res.status(400).json({ status: 'error', errorId: 'missing_fields', error: 'All fields are required' });
 	}
-	if (![firstName, lastName, email, companyName, companySize, password].every(val => typeof val === 'string')) {
+	if (![firstName, lastName, email, companyName, companySize, password, userAgent, platform, language, deviceId].every(val => typeof val === 'string')) {
 		return res.status(400).json({ status: 'error', errorId: 'invalid_types', error: 'Invalid field types' });
 	}
 	if ([firstName, lastName, companyName, password].some(val => val.length < 2) || companySize.length < 1) {
@@ -122,19 +122,36 @@ const post = async (req, res) => {
 		entrepriseMail.setText(`Hello ${firstName} ${lastName},\n\nYour entreprise "${companyName}" has been successfully created on BizExpenses.\n\nBest regards,\nThe BizExpenses Team`);
 		entrepriseMail.send();
 
+		const ip_address = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.ip;
 		const token = jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '30d' });
+
+		await database().collection('devices').insertOne({
+			token,
+			user_uuid: user.uuid,
+			deviceId,
+			userAgent,
+			platform,
+			ip_address,
+			language,
+			createdAt: new Date(),
+			lastUsedAt: new Date(),
+			trusted: true
+		});
+
+
 		return res.status(201).json({
 			status: 'success',
-			message: 'User created successfully',
-			authorization: `Bearer ${token}`,
+			data: {
+				authorization: `Bearer ${token}`,
 				user: {
-					_id: insertResult.insertedId,
+					uuid: user.uuid,
 					firstName: user.firstName,
 					lastName: user.lastName,
 					email: user.email,
-					role: user.role
-				},
-			entrepriseUuid: entrepriseInsertResult.insertedId,
+					role: user.role,
+					trusted: true
+				}
+			}
 		});
 	} catch (err) {
 		console.error('Error creating user:', err);
